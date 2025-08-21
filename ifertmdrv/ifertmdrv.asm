@@ -95,7 +95,9 @@ skipthisthingtoo:
   TAX
   INY
   LDA [songAddrProgress],y
+  BEQ nahitsprobablynothing
   STA songAddr
+nahitsprobablynothing:
   STX songAddrProgress
   DEY
   DEY
@@ -130,8 +132,6 @@ speedsetloop:
   BNE speedsetloop
   LDY ExtraReg
   INY
-  INY
-
 
 ignoreheader:
 
