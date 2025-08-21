@@ -52,13 +52,14 @@ $E0 means don't change the $4000,4x register pattern and only do pitch changes
 
 orders are laid out in bunches of four and consist of pulse 1, pulse 2, triangle and noise/DPCM, they are formatted in $XY and index the pattern data in $0YX0 offset from song begin (but nothing is stopping you from using songX.db as pattern data)
 
-$00 $XX $YY $AB
+$00 is a NOP
+
+$10 $XX $YY
 this is header information and always should come first, it can also be applied mid song and always applies itself to the next pattern
 $XX sets pattern length to a zero based value
 $YY points to an address in speedtbl.db to pull 4 values from
-$AB set volume for pulse channel 1 and 2, valid values for each nibble are 0 1 and 2 for normal, half and quarter volume 
 
-$01 $XX $YY sets the orders position to the little endian program counter position specified by the next bytes 
+$20 $XX $YY sets the orders position to the little endian value specified by the next bytes $YY can be zero to signify no change to the high byte 
 
 ---
 
@@ -119,3 +120,6 @@ this adds or subtracts values from the low byte of a channel's note, BE CAREFUL 
 
 9.3 region
 the Region variable is where you set the region for the driver before you initialize it, 0 is NTSC, 1 is PAL and 2 is Dendy
+
+10. version Z
+this version has 5 patterns per order and the z-saw channel is controlled by %XXYYYYYY of what is normally a $4000,4x pattern with %XX being timber and %YYYYYY being volume
