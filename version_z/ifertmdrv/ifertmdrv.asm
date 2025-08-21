@@ -94,7 +94,9 @@ skipthisthingtoo:
   INY
   LDA [songAddrProgress],y
   STA songAddr
+  BEQ nahitsprobablynothing
   STX songAddrProgress
+nahitsprobablynothing:
   DEY
   DEY
 ordersnotjmp:
