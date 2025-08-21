@@ -1,10 +1,10 @@
 Region = $00
-CHXpataddr = $710
+CHXpataddr = $740
 TMPpatddr = $F0
 songAddrProgress = $F8
 songAddr = $F9
 songCommand = $730
-channel = $733
+channel = $712
 
 currentPatternFrameTimer = $734
 currentPatternProgress = $735
@@ -13,33 +13,33 @@ patternLength = $737
 
 patternSpeedX = $738
 
-CHXspeed = $763
-CHXbaseinst = $751
-CHXbaseinst2 = $770
-CHXfinetune = $743
-CHXbasefinetune = $740
+CHXspeed = $742
+CHXbaseinst = $743
+CHXbaseinst2 = $754
+CHXfinetune = $755
+CHXbasefinetune = $756
 
-CHXinstdelay = $741
+CHXinstdelay = $757
 
-CHXframetimer = $762
+CHXframetimer = $768
 
-CHXinstaddr = $760
+CHXinstaddr = $769
 
-CHXnote = $761
+CHXnote = $76A
 
-CHXminiloopflag = $712
+CHXminiloopflag = $76B
 
-CHXtranspose = $742
+CHXtranspose = $77C
 
-CHXmutetimer = $750
-CHXdivisorprogress = $752
-CHXdivisorcount = $753
+CHXmutetimer = $77D
+CHXdivisorprogress = $77E
+CHXdivisorcount = $77F
 
 
 DPCMframecounter = $731
-DPCMready = $732
+DPCMready = $711
 
-ExtraReg = $730
+ExtraReg = $710
 
 shitFuckRegPrev = $710
 
@@ -53,8 +53,6 @@ shitFuckRegPrev = $710
   DEC currentPatternFrameTimer
   CPX #$00
   BNE skippatternprogressincrement
-  SEI
-
   LDY currentPatternSpeed
   LDA patternSpeedX,y
   INC currentPatternSpeed
@@ -130,7 +128,6 @@ speedsetloop:
   BNE speedsetloop
   LDY ExtraReg
   INY
-  INY
 
 
 ignoreheader:
@@ -170,7 +167,7 @@ ordersnop:
   INX
   INX
   INY
-  CPX #$10
+  CPX #$14
   BNE ordersetloop
   TYA
   CLC
@@ -298,11 +295,6 @@ skipfe:
   STA CHXinstaddr,x
 
 
-  CPX #$0C
-  BNE notnoise
-  AND #$C0
-  STA DPCMready
-notnoise:
 
 
   INC TMPpatddr
@@ -310,13 +302,6 @@ notnoise:
 instisreatined:
   LDA CHXbaseinst,x
   STA CHXinstaddr,x
-
-  CPX #$0C
-  BNE notnoise2
-  AND #$C0
-  STA DPCMready
-notnoise2:
-
 instisimmediate:
 
 
@@ -337,7 +322,7 @@ patternend:
   INX
   INX
   STX channel
-  CPX #$10
+  CPX #$14
   BEQ patternendforrealz
   JMP patternparserloop
 patternendforrealz:
@@ -440,7 +425,7 @@ instloopskip:
   INX
   INX
   INX
-  CPX #$10
+  CPX #$14
   BEQ instloopend
   JMP instloop
 
@@ -490,8 +475,22 @@ skippitchcorrect:
   CPY #$10
   BNE notewriteloop
 
-
-
+  lda $730
+  AND #$3F
+  jsr zsaw_set_volume
+  lda $730
+  LSR a
+  LSR a
+  LSR a
+  LSR a
+  LSR a
+  AND #$06
+  jsr zsaw_set_timbre
+  lda CHXnote + $10
+  LSR a
+  CLC
+  ADC #$fe
+  jsr zsaw_play_note ; enables DMC IRQ
 
 
   ;LDA #$3F
@@ -554,27 +553,7 @@ bufferwritten:
 
   ; AUDIO BUFFER WRITE FINISH
 
-  LDA DPCMready ; DPCM BUFFER HANDLER
-  CMP #$00
-  BEQ ignoredpcm
-  LSR a
-  LSR a
-  LSR a
-  LSR a
-  TAX
-  LDY #$00
-dpcmloop:
-  LDA dpcmtbl,x
-  STA $4010,y
-  INX
-  INY
-  CPY #$4
-  BNE dpcmloop
-  LDA #$1F
-  STA $4015
-  LDA #$00
-  STA DPCMready
-ignoredpcm:
+
 
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; IFEWARE'S REALTIME AUDIO DRIVER TM END
