@@ -195,11 +195,6 @@ patternparserloop:
   STA TMPpatddr+1
 
 
-  .include "ifertmdrv/divisoraction.asm"
-
-
-
-
   LDA CHXframetimer,x
   DEC CHXframetimer,x
   CMP #$00
@@ -220,6 +215,10 @@ patternparserloop:
 skipresetchannelspeed:
   JMP patternend
 skipthisthingtootwo:
+
+
+  .include "ifertmdrv/divisoraction.asm"
+
 
   LDY #$00
 
