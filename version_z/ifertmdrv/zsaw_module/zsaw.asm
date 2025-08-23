@@ -153,10 +153,22 @@ play_note:
         tax
 
         sei ; briefly disable interrupts, for pointer safety
+
+        lda <Region
+        cmp #$01
+        beq zsawpal
+
         lda zsaw_note_lists+0, x
         sta <zsaw_ptr+0
         lda zsaw_note_lists+1, x
         sta <zsaw_ptr+1
+        jmp zsawregionend
+zsawpal:
+        lda zsaw_pal_note_lists+0, x
+        sta <zsaw_ptr+0
+        lda zsaw_pal_note_lists+1, x
+        sta <zsaw_ptr+1
+zsawregionend:
         lda #0
         sta <zsaw_pos
         lda #1
@@ -731,3 +743,5 @@ zsaw_note_period_95:
 zsaw_note_period_96:
 ; Note: C8, Target Frequency: 2093.00, Actual Frequency: 2110.58, Tuning Error: 17.58
   .byte $01, $0c, $00
+
+  .include "ifertmdrv/zsaw_module/zsaw_pal.asm"
