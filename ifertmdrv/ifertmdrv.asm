@@ -53,7 +53,7 @@ shitFuckRegPrev = $710
   DEC currentPatternFrameTimer
   CPX #$00
   BNE skippatternprogressincrement
-  SEI
+
 
   LDY currentPatternSpeed
   LDA patternSpeedX,y
@@ -285,7 +285,7 @@ skipfe:
   .include "ifertmdrv/transposeaction.asm"
 
   AND #$FE
-  STA CHXinstaddr+1,x
+  STA CHXnote,x
 
   .include "ifertmdrv/secondinstaction.asm"
 

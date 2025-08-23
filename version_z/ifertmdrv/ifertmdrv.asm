@@ -284,7 +284,7 @@ skipfe:
   .include "ifertmdrv/transposeaction.asm"
 
   AND #$FE
-  STA CHXinstaddr+1,x
+  STA CHXinstaddr,x
 
   .include "ifertmdrv/secondinstaction.asm"
 
