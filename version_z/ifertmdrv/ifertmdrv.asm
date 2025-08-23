@@ -88,10 +88,10 @@ skipthisthingtoo:
   TAX
   INY
   LDA [songAddrProgress],y
-  STA songAddr
   BEQ nahitsprobablynothing
-  STX songAddrProgress
+  STA <songAddr
 nahitsprobablynothing:
+  STX <songAddrProgress
   DEY
   DEY
 ordersnotjmp:
@@ -150,7 +150,7 @@ ordersetloop:
   LDA [songAddrProgress],y
   AND #$0F
   CLC
-  ADC songAddr
+  ADC <songAddr
   STA CHXpataddr+1,x
 
 
@@ -168,8 +168,8 @@ ordersnop:
   BNE ordersetloop
   TYA
   CLC
-  ADC songAddrProgress
-  STA songAddrProgress
+  ADC <songAddrProgress
+  STA <songAddrProgress
 
 ordersend:
 
@@ -185,9 +185,9 @@ ordersend:
   STX channel
 patternparserloop:
   LDA CHXpataddr,x
-  STA TMPpatddr
+  STA <TMPpatddr
   LDA CHXpataddr+1,x
-  STA TMPpatddr+1
+  STA <TMPpatddr+1
 
 
   LDA CHXframetimer,x
@@ -225,10 +225,10 @@ skipthisthingtootwo:
   LDA [TMPpatddr],y
   CMP #$FC
   BNE skipfcwithdelay
-  INC TMPpatddr
+  INC <TMPpatddr
   LDA [TMPpatddr],y
   STA CHXbaseinst,x
-  INC TMPpatddr
+  INC <TMPpatddr
 skipfcwithdelay:
 
 skipfc:
@@ -247,7 +247,7 @@ skipfc:
   INY
   LDA [TMPpatddr],y
   DEY
-  STA TMPpatddr
+  STA <TMPpatddr
 skipffwithdelay:
 
 skipff:
@@ -265,7 +265,7 @@ skipff:
   LDA [TMPpatddr],y
   CMP #$FE
   BNE skipfe
-  INC TMPpatddr
+  INC <TMPpatddr
   JMP instisimmediate
 
 skipfe:
@@ -279,7 +279,7 @@ skipfe:
   .include "ifertmdrv/transposeaction.asm"
 
   AND #$FE
-  STA CHXinstaddr,x
+  STA CHXnote,x
 
   .include "ifertmdrv/secondinstaction.asm"
 
@@ -293,7 +293,7 @@ skipfe:
 
 
 
-  INC TMPpatddr
+  INC <TMPpatddr
   JMP instisimmediate
 instisreatined:
   LDA CHXbaseinst,x
@@ -309,9 +309,9 @@ instisimmediate:
 patternend:
 
   LDY #$00
-  LDA TMPpatddr
+  LDA <TMPpatddr
   STA CHXpataddr,x
-  LDA TMPpatddr+1
+  LDA <TMPpatddr+1
   STA CHXpataddr+1,x
   INX
   INX

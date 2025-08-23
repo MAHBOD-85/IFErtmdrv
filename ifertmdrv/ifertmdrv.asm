@@ -93,9 +93,9 @@ skipthisthingtoo:
   INY
   LDA [songAddrProgress],y
   BEQ nahitsprobablynothing
-  STA songAddr
+  STA <songAddr
 nahitsprobablynothing:
-  STX songAddrProgress
+  STX <songAddrProgress
   DEY
   DEY
 ordersnotjmp:
@@ -153,7 +153,7 @@ ordersetloop:
   LDA [songAddrProgress],y
   AND #$0F
   CLC
-  ADC songAddr
+  ADC <songAddr
   STA CHXpataddr+1,x
 
 
@@ -171,8 +171,8 @@ ordersnop:
   BNE ordersetloop
   TYA
   CLC
-  ADC songAddrProgress
-  STA songAddrProgress
+  ADC <songAddrProgress
+  STA <songAddrProgress
 
 ordersend:
 
@@ -188,9 +188,9 @@ ordersend:
   STX channel
 patternparserloop:
   LDA CHXpataddr,x
-  STA TMPpatddr
+  STA <TMPpatddr
   LDA CHXpataddr+1,x
-  STA TMPpatddr+1
+  STA <TMPpatddr+1
 
 
   LDA CHXframetimer,x
@@ -228,10 +228,10 @@ skipthisthingtootwo:
   LDA [TMPpatddr],y
   CMP #$FC
   BNE skipfcwithdelay
-  INC TMPpatddr
+  INC <TMPpatddr
   LDA [TMPpatddr],y
   STA CHXbaseinst,x
-  INC TMPpatddr
+  INC <TMPpatddr
 skipfcwithdelay:
 
 skipfc:
@@ -250,7 +250,7 @@ skipfc:
   INY
   LDA [TMPpatddr],y
   DEY
-  STA TMPpatddr
+  STA <TMPpatddr
 skipffwithdelay:
 
 skipff:
@@ -268,7 +268,7 @@ skipff:
   LDA [TMPpatddr],y
   CMP #$FE
   BNE skipfe
-  INC TMPpatddr
+  INC <TMPpatddr
   JMP instisimmediate
 
 skipfe:
@@ -301,7 +301,7 @@ skipfe:
 notnoise:
 
 
-  INC TMPpatddr
+  INC <TMPpatddr
   JMP instisimmediate
 instisreatined:
   LDA CHXbaseinst,x
@@ -324,9 +324,9 @@ instisimmediate:
 patternend:
 
   LDY #$00
-  LDA TMPpatddr
+  LDA <TMPpatddr
   STA CHXpataddr,x
-  LDA TMPpatddr+1
+  LDA <TMPpatddr+1
   STA CHXpataddr+1,x
   INX
   INX

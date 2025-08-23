@@ -55,29 +55,29 @@ all_55_byte: .byte $55,$55,$55,$55,$55,$55,$55,$55,$55,$55,$55,$55,$55,$55,$55,$
 
 zsaw_init:
         lda #0
-        sta irq_enabled
-        sta irq_active
-        sta zsaw_oam_pending
-        sta zsaw_nmi_pending
-        sta zsaw_parity_counter
+        sta <irq_enabled
+        sta <irq_active
+        sta <zsaw_oam_pending
+        sta <zsaw_nmi_pending
+        sta <zsaw_parity_counter
 
         lda #0
-        sta zsaw_timbre_index
+        sta <zsaw_timbre_index
 
         ; mostly unnecessary, but just for safety, initialize this
         ; to the first index. On the off chance the IRQ gets called somehow
         ; before a note plays normally, this will prevent a crash
         lda timbre_behavior_lut+0
-        sta zsaw_timbre_ptr+0
+        sta <zsaw_timbre_ptr+0
         lda timbre_behavior_lut+1
-        sta zsaw_timbre_ptr+1
+        sta <zsaw_timbre_ptr+1
 
         rts
 
 ; desired timbre in A
 ; note: will not take effect until next play_note command
 zsaw_set_timbre:
-        sta zsaw_timbre_index        
+        sta <zsaw_timbre_index
         rts
 
 ; desired volume in A, clobbers X
@@ -89,18 +89,18 @@ zsaw_set_timbre:
 ; - play new note
 ; when changing timbre, always remember to restart the note
 zsaw_set_volume:
-        sta zsaw_volume
-        ldx zsaw_timbre_index
+        sta <zsaw_volume
+        ldx <zsaw_timbre_index
         cpx #1
         beq inverted
         cpx #3
         beq inverted
         rts
-inverted: 
+inverted:
         lda #$7F
         sec
-        sbc zsaw_volume
-        sta zsaw_volume
+        sbc <zsaw_volume
+        sta <zsaw_volume
         rts
 
 
@@ -113,7 +113,7 @@ timbre_behavior_lut:
   .dw timbre_triangle ; note: we mask to 8 timbres, so the extra entries are mostly for safety
   .dw timbre_triangle
   .dw timbre_triangle
-        
+
 
 timbre_sample_lut:
         .byte ((all_00_byte - $C000) >> 6) & $ff ; sawtooth, floor
@@ -137,48 +137,48 @@ zsaw_play_note:
         ; or the note index is different from what's currently playing
         ; otherwise we reset the phase for no good reason, and this tends
         ; to annoy music engines
-        ldx zsaw_timbre_index
-        cpx zsaw_current_timbre
+        ldx <zsaw_timbre_index
+        cpx <zsaw_current_timbre
         bne play_note
-        cmp zsaw_current_note
+        cmp <zsaw_current_note
         bne play_note
         rts
 bad_note_index:
         jsr zsaw_silence
         rts
 play_note:
-        sta zsaw_current_note
-        stx zsaw_current_timbre 
+        sta <zsaw_current_note
+        stx <zsaw_current_timbre
         asl a ; note index to word index for the table lookup
         tax
 
         sei ; briefly disable interrupts, for pointer safety
-        lda zsaw_note_lists+0, x 
-        sta zsaw_ptr+0
-        lda zsaw_note_lists+1, x 
-        sta zsaw_ptr+1
+        lda zsaw_note_lists+0, x
+        sta <zsaw_ptr+0
+        lda zsaw_note_lists+1, x
+        sta <zsaw_ptr+1
         lda #0
-        sta zsaw_pos
+        sta <zsaw_pos
         lda #1
-        sta zsaw_count
+        sta <zsaw_count
 
 standard_timbre:
         ; here also set the timbre pointer, using the LUT
-        lda zsaw_timbre_index
+        lda <zsaw_timbre_index
         and #%00000111
         asl a
         tax
         lda timbre_behavior_lut+0, x
-        sta zsaw_timbre_ptr+0
+        sta <zsaw_timbre_ptr+0
         lda timbre_behavior_lut+1, x
-        sta zsaw_timbre_ptr+1
+        sta <zsaw_timbre_ptr+1
 
         ; reset the parity counter (keeps square and triangle slightly more consistent)
         lda #0
-        sta zsaw_parity_counter
+        sta <zsaw_parity_counter
 
         ; set up the sample address and size
-        ldx zsaw_timbre_index
+        ldx <zsaw_timbre_index
         lda timbre_sample_lut, x
 
         sta $4012
@@ -186,7 +186,7 @@ standard_timbre:
         sta $4013
 
         ; Now, if we were newly triggered, start the sample playback from scratch
-        lda irq_enabled
+        lda <irq_enabled
         bne done ; Do not pass go. Do not collect $200
 
         ; start it up (the IRQ will take over future starts after this)
@@ -197,7 +197,7 @@ standard_timbre:
 
         ; tell the NMI handler that interrupts are active
         lda #$FF
-        sta irq_enabled 
+        sta <irq_enabled
 done:
         cli ; enable interrupts
         rts
@@ -214,30 +214,30 @@ zsaw_silence:
         ; Tell the NMI handler that interrupts are no longer active
         ; (It'll need to do its own OAM DMA)
         lda #$00
-        sta irq_enabled
+        sta <irq_enabled
 
         ; Just for safety, clear any delayed OAM / NMI flags, so they
         ; aren't (accidentally) triggered the next time playback begins
         lda #0
-        sta zsaw_nmi_pending
-        sta zsaw_oam_pending
+        sta <zsaw_nmi_pending
+        sta <zsaw_oam_pending
 
         lda #$FF
-        sta zsaw_current_note
+        sta <zsaw_current_note
 
         rts
 
 
 zsaw_irq:
-        dec irq_active ; (5) signal to NMI that the IRQ routine is in progress
-        sta zsaw_preserve_a ; (3) save A and Y
-        sty zsaw_preserve_y ; (3)
+        dec <irq_active ; (5) signal to NMI that the IRQ routine is in progress
+        sta <zsaw_preserve_a ; (3) save A and Y
+        sty <zsaw_preserve_y ; (3)
         ; decrement the RLE counter
-        dec zsaw_count ; (5)
+        dec <zsaw_count ; (5)
         ; if this is still positive, simply continue playing the last sample
         bne restart_dmc ; (2) (3t)
         ; otherwise it's time to load the next entry
-        ldy zsaw_pos ; (3)
+        ldy <zsaw_pos ; (3)
         lda [zsaw_ptr], y ; (5)
         bne load_next_entry ; (2) (3t)
         ; if the count is zero, it's time to reset the entire sequence
@@ -246,13 +246,13 @@ zsaw_irq:
         ldy #0 ; (2)
         lda [zsaw_ptr], y ; (5)
 load_first_entry:
-        sta zsaw_count ; (3)
+        sta <zsaw_count ; (3)
         iny ; (2)
         lda [zsaw_ptr], y ; (5)
         ora #$80 ; (2) set the interrupt flag
         sta $4010 ; (4) set the period + interrupt for this sample
         iny ; (2)
-        sty zsaw_pos ; (3)
+        sty <zsaw_pos ; (3)
 
         ; Now work out the new volume to write to the PCM level; the behavior
         ; varies somewhat for sawtooth and square
@@ -260,13 +260,13 @@ load_first_entry:
 
 load_next_entry:
         ; Just like loading the first entry, without a sequence reset
-        sta zsaw_count ; (3)
+        sta <zsaw_count ; (3)
         iny ; (2)
         lda [zsaw_ptr], y ; (5)
         ora #$80 ; (2) set the interrupt flag
         sta $4010 ; (4) set the period + interrupt for this sample
         iny ; (2)
-        sty zsaw_pos ; (3)
+        sty <zsaw_pos ; (3)
         jmp restart_dmc
 
 
@@ -275,24 +275,24 @@ restart_dmc:
         sta $4015 ; (4)
         ; Now for housekeeping.
         ; First, if NMI asked us to perform OAM DMA, do that here
-        bit zsaw_oam_pending
+        bit <zsaw_oam_pending
         bpl no_oam_needed
         lda #$00
         sta $2003 ; OAM ADDR
         lda #ZSAW_SHADOW_OAM
         sta $4014 ; OAM DMA
-        inc zsaw_oam_pending
+        inc <zsaw_oam_pending
 no_oam_needed:
         ; At this point it is safe for NMI interrupt the IRQ routine
-        inc irq_active
+        inc <irq_active
         ; If we need to perform a manual NMI, do that now
-        bit zsaw_nmi_pending
+        bit <zsaw_nmi_pending
         bpl no_nmi_needed
-        inc zsaw_nmi_pending
+        inc <zsaw_nmi_pending
         jsr zsaw_manual_nmi ; this should preserve all registers, including X
 no_nmi_needed:
-        ldy zsaw_preserve_y ; (3) restore A and Y
-        lda zsaw_preserve_a ; (3)
+        ldy <zsaw_preserve_y ; (3) restore A and Y
+        lda <zsaw_preserve_a ; (3)
         rti
 
 
@@ -300,11 +300,11 @@ timbre_square_00:
         ; For square waves, we alternate between the set volume and
         ; a fixed baseline, $00 in this case
         lda #$80                  ; (2)
-        eor zsaw_parity_counter ; (3)
-        sta zsaw_parity_counter ; (3)
-        bmi odd_phase           
+        eor <zsaw_parity_counter ; (3)
+        sta <zsaw_parity_counter ; (3)
+        bmi odd_phase
 even_phase:
-        lda zsaw_volume ; (3)
+        lda <zsaw_volume ; (3)
         jmp done_picking_phase ; (3)
 odd_phase:
         lda #0 ; (2)
@@ -317,11 +317,11 @@ timbre_square_7F:
         ; For square waves, we alternate between the set volume and
         ; a fixed baseline, $7F in this case
         lda #$80                  ; (2)
-        eor zsaw_parity_counter ; (3)
-        sta zsaw_parity_counter ; (3)
+        eor <zsaw_parity_counter ; (3)
+        sta <zsaw_parity_counter ; (3)
         bmi odd_phase2
 even_phase2:
-        lda zsaw_volume ; (3)
+        lda <zsaw_volume ; (3)
         jmp done_picking_phase2 ; (3)
 odd_phase2:
         lda #$7F ; (2)
@@ -330,10 +330,10 @@ done_picking_phase2:
         jmp restart_dmc
 
 
-timbre_sawtooth
+timbre_sawtooth:
         ; For sawtooth we always write the current volume
         ; (the direction is controlled by which sample is playing)
-        lda zsaw_volume ; (3)
+        lda <zsaw_volume ; (3)
         sta $4011 ; (4)
         jmp restart_dmc
 
@@ -341,8 +341,8 @@ timbre_sawtooth
 timbre_triangle:
         ; For triangle rather than alter the volume, we alter the direction
         lda #$80                  ; (2)
-        eor zsaw_parity_counter ; (3)
-        sta zsaw_parity_counter ; (3)
+        eor <zsaw_parity_counter ; (3)
+        sta <zsaw_parity_counter ; (3)
         bmi odd_phase3
 even_phase3:
         lda #((all_FF_byte - $C000) >> 6) & $FF
@@ -356,9 +356,9 @@ done_picking_phase3:
 
 zsaw_nmi:
         ; penalty and jitter: 14 cycles
-        bit irq_active ; (3)
+        bit <irq_active ; (3)
         bpl safe_to_run_nmi ; (2, 3t)
-        dec zsaw_nmi_pending ; (5)
+        dec <zsaw_nmi_pending ; (5)
         rti ; (6) exit immediately; IRQ will continue and call NMI when it is done
 safe_to_run_nmi:
         jsr zsaw_manual_nmi
@@ -373,9 +373,9 @@ zsaw_manual_nmi:
         tya
         pha
 
-        bit irq_enabled
+        bit <irq_enabled
         bpl perform_oam_dma
-        dec zsaw_oam_pending ; Perform OAM DMA during the IRQ routine
+        dec <zsaw_oam_pending ; Perform OAM DMA during the IRQ routine
         ; allow interrupts during nmi as early as possible
         cli
         jmp done_with_oam
