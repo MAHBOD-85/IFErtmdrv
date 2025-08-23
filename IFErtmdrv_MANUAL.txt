@@ -7,13 +7,13 @@ IFEware realtime NES music driver documentation
 This audio driver is meant for games with extremely low rom sizes and designed to be very modular allowing for addition or removal of features with ease and can integrate with any program's logic as easily as pasting in the code in
 soundeffects have to be handled externally but a temporary mute counter is provided for such purposes 
 there is no support for hardware envelope, length counter and hardware sweep but there is support for triangle linear counter trick
-this driver operates in $710 to $76F region of the work ram by default and requires 5 zeropage bytes
+this driver operates in $700 to $76F region of the work ram by default and requires 5 zeropage bytes
 
 ---
 
 2. Files
 
-the driver operates on 5 file types
+the driver operates on the following file types
 
 freqtbl.db (256 bytes)
 instrument.db (256 bytes)
@@ -30,7 +30,7 @@ all files should be aligned to pages but you can merge them with eachother
 3. freqtbl.db
 
 this table stores register patterns in little endian mode to be in line with the APU, A1 to C8 and noise values are stored by default but the user can add custom tables
-ALL VALUES SETTING THE NOTE IN A RELATIVE OR ABSOLUTE MANNER MUST BE EVEN, values $A0 and above are considered to be blacklisted from any transposation and finetuning by default but not relative arpeggio, values $F0 and above are relatively unused for the effects take their place
+values $A0 and above are considered to be blacklisted from any transposation and finetuning by default but not relative arpeggio, values $F0 and above are relatively unused for the effects take their place
 
 ---
 
@@ -51,8 +51,7 @@ $E0 means don't change the $4000,4x register pattern and only do pitch changes
 5. songX.db
 
 orders are laid out in bunches of four and consist of pulse 1, pulse 2, triangle and noise/DPCM, they are formatted in $XY and index the pattern data in $0YX0 offset from song begin (but nothing is stopping you from using songX.db as pattern data)
-
-$00 is a NOP
+this value can be set to $00 to mean leave the pattern running and don't set its values
 
 $10 $XX $YY
 this is header information and always should come first, it can also be applied mid song and always applies itself to the next pattern
@@ -106,7 +105,7 @@ it contains values referenced by song header bunch and delay commands in orders 
 8. dpcmtbl.db
 
 this table stores 3 $4010 to $4013 register patterns in groups of 4, first 4 bytes are reserved
-the DPCM playback is determined by noise channel's instrument, if it is $00 to $3F no DPCM will play, if it's $40 to $7F the first DPCM will play and vice versa
+the DPCM playback is determined by noise channel's instrument, if it is $00 to $3F no DPCM will play, if it's $40 to $7F the first DPCM will play and vice versa (only works for primary instrument)
 
 ---
 
@@ -120,6 +119,8 @@ this adds or subtracts values from the low byte of a channel's note, BE CAREFUL 
 
 9.3 region
 the Region variable is where you set the region for the driver before you initialize it, 0 is NTSC, 1 is PAL and 2 is Dendy
+
+---
 
 10. version Z
 this version has 5 patterns per order and the z-saw channel is controlled by %XXYYYYYY of what is normally a $4000,4x pattern with %XX being timber and %YYYYYY being volume

@@ -1,9 +1,8 @@
 Region = $00
 CHXpataddr = $710
 TMPpatddr = $F0
-songAddrProgress = $F8
-songAddr = $F9
-songCommand = $730
+songAddrProgress = $F2
+songAddr = $F3
 channel = $733
 
 currentPatternFrameTimer = $734
@@ -35,8 +34,6 @@ CHXmutetimer = $750
 CHXdivisorprogress = $752
 CHXdivisorcount = $753
 
-
-DPCMframecounter = $731
 DPCMready = $732
 
 ExtraReg = $730
