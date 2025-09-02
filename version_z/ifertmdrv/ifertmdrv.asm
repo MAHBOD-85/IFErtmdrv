@@ -1,42 +1,3 @@
-Region = $00
-CHXpataddr = $740
-TMPpatddr = $F0
-songAddrProgress = $F2
-songAddr = $F3
-channel = $712
-
-currentPatternFrameTimer = $734
-currentPatternProgress = $735
-currentPatternSpeed = $736
-patternLength = $737
-
-patternSpeedX = $738
-
-CHXspeed = $742
-CHXbaseinst = $743
-CHXbaseinst2 = $754
-CHXfinetune = $755
-CHXbasefinetune = $756
-
-CHXinstdelay = $757
-
-CHXframetimer = $768
-
-CHXinstaddr = $769
-
-CHXnote = $76A
-
-CHXminiloopflag = $76B
-
-CHXtranspose = $77C
-
-CHXmutetimer = $77D
-CHXdivisorprogress = $77E
-CHXdivisorcount = $77F
-
-ExtraReg = $710
-
-shitFuckRegPrev = $710
 
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; IFEWARE'S REALTIME AUDIO DRIVER TM BEGIN
@@ -137,35 +98,13 @@ ordersnotspecialbyte:
   LDA patternSpeedX
   STA currentPatternFrameTimer
   LDX #$00
+
+
+
 ordersetloop:
+  .include "ifertmdrv/shortmodeaddressing.asm"
 
 
-
-
-  LDA [songAddrProgress],y
-  BEQ ordersnop
-  AND #$F0
-  STA CHXpataddr,x
-
-  LDA [songAddrProgress],y
-  AND #$0F
-  CLC
-  ADC <songAddr
-  STA CHXpataddr+1,x
-
-
-  LDA #$00
-  STA CHXspeed,x
-  STA CHXframetimer,x
-  STA CHXminiloopflag,x
-ordersnop:
-  INX
-  INX
-  INX
-  INX
-  INY
-  CPX #$14
-  BNE ordersetloop
   TYA
   CLC
   ADC <songAddrProgress
@@ -374,7 +313,7 @@ notspecialbytewithdelay:
 
 
 notspecialbyte:
-  STA $720,x
+  STA APUregbuffer+0,x
 instnop:
   LDA instrument2,y
   AND #$01
@@ -450,10 +389,10 @@ skippitchcorrect:
 
 
   LDA freqtbl,x
-  STA $722,y
+  STA APUregbuffer+2,y
   INX
   LDA freqtbl,x
-  STA $723,y
+  STA APUregbuffer+3,y
 
 
 
@@ -494,9 +433,9 @@ skippitchcorrect:
 
   ; AUDIO BUFFER WRITE
 
-  LDA $728
+  LDA APUregbuffer+8
   AND #$0F
-  STA $728
+  STA APUregbuffer+8
 
 
 
@@ -517,14 +456,14 @@ audioloop:
 dontdecrementmute:
 
 audiosubloop:
-  LDA $720,x
+  LDA APUregbuffer+0,x
   STA $4000,x
   INX
   TXA
   AND #$03
   CMP #$03
   BNE audiosubloop
-  LDA $720,x
+  LDA APUregbuffer+0,x
   CMP shitFuckRegPrev,x
   BEQ bufferwritten
   STA $4000,x
@@ -543,7 +482,7 @@ bufferwritten:
 
 
 
-  LDA $72B
+  LDA APUregbuffer+$B
   STA $400B
 
 

@@ -7,7 +7,7 @@
   CMP #$80
   ROR a
   CLC
-  ADC $722,y
-  STA $722,y
+  ADC APUregbuffer+2,y
+  STA APUregbuffer+2,y
 
 dontfinetune:

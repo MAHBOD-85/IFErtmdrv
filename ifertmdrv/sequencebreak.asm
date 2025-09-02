@@ -21,6 +21,8 @@ skipdelayspeedcorrect:
   LDA speedtbl,x
   LDX channel
   STA CHXframetimer,x
+  STA CHXaccountfordivisor,x     ; DIVISOR INTEROP CODE
+  INC CHXaccountfordivisorflag,x ; DIVISOR INTEROP CODE
   INC <TMPpatddr
 skipfxwithdelay:
 
