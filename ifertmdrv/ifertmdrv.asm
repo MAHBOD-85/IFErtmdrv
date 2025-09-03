@@ -239,11 +239,7 @@ skipfe:
   STA CHXinstaddr,x
 
 
-  CPX #$0C
-  BNE notnoise
-  AND #$C0
-  STA DPCMready
-notnoise:
+  .include "ifertmdrv/percussivedpcminstrument.asm"
 
 
   INC <TMPpatddr
@@ -252,11 +248,7 @@ instisreatined:
   LDA CHXbaseinst,x
   STA CHXinstaddr,x
 
-  CPX #$0C
-  BNE notnoise2
-  AND #$C0
-  STA DPCMready
-notnoise2:
+  .include "ifertmdrv/percussivedpcminstrument.asm"
 
 instisimmediate:
 
@@ -495,27 +487,7 @@ bufferwritten:
 
   ; AUDIO BUFFER WRITE FINISH
 
-  LDA DPCMready ; DPCM BUFFER HANDLER
-  CMP #$00
-  BEQ ignoredpcm
-  LSR a
-  LSR a
-  LSR a
-  LSR a
-  TAX
-  LDY #$00
-dpcmloop:
-  LDA dpcmtbl,x
-  STA $4010,y
-  INX
-  INY
-  CPY #$4
-  BNE dpcmloop
-  LDA #$1F
-  STA $4015
-  LDA #$00
-  STA DPCMready
-ignoredpcm:
+  .include "ifertmdrv/percussivedpcmhandler.asm"
 
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; IFEWARE'S REALTIME AUDIO DRIVER TM END

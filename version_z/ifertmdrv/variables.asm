@@ -1,7 +1,12 @@
-Region = $00
-TMPpatddr = $F0
-songAddrProgress = $F2
-songAddr = $F3
+  .org $F0
+TMPpatddr:
+  .ds 2
+songAddrProgress:
+  .ds 1
+songAddr:
+  .ds 1
+Region:
+  .ds 1
 
 
   .org $710
@@ -87,3 +92,8 @@ CHXminiloopflag:
   .ds 16
 
 CHXpataddr:
+  .ds 2
+  .ds 1
+  .ds 1
+
+  .ds 16

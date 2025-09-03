@@ -105,14 +105,14 @@ inverted:
 
 
 timbre_behavior_lut:
-  .dw timbre_sawtooth
-  .dw timbre_sawtooth
-  .dw timbre_square_00
-  .dw timbre_square_7F
-  .dw timbre_triangle
-  .dw timbre_triangle ; note: we mask to 8 timbres, so the extra entries are mostly for safety
-  .dw timbre_triangle
-  .dw timbre_triangle
+  .word timbre_sawtooth
+  .word timbre_sawtooth
+  .word timbre_square_00
+  .word timbre_square_7F
+  .word timbre_triangle
+  .word timbre_triangle ; note: we mask to 8 timbres, so the extra entries are mostly for safety
+  .word timbre_triangle
+  .word timbre_triangle
 
 
 timbre_sample_lut:

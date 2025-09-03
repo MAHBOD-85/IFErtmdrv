@@ -1,7 +1,12 @@
-Region = $00
-TMPpatddr = $F0
-songAddrProgress = $F2
-songAddr = $F3
+  .org $F0
+TMPpatddr:
+  .ds 2
+songAddrProgress:
+  .ds 1
+songAddr:
+  .ds 1
+Region:
+  .ds 1
 
 
   .org $710
@@ -25,7 +30,7 @@ channel:
   .ds 1
 currentPatternFrameTimer:
   .ds 1
-currentPatternProgress:
+currentPatternPro.dss:
   .ds 1
 currentPatternSpeed:
   .ds 1
@@ -62,7 +67,7 @@ CHXbasefinetune:
 
 
 
-CHXdivisorprogress:
+CHXdivisorpro.dss:
   .ds 1
 CHXdivisorcount:
   .ds 1
@@ -79,3 +84,7 @@ CHXframetimer:
 CHXspeed:
   .ds 1
 CHXmutetimer:
+  .ds 1
+  .ds 1
+
+  .ds 12
