@@ -14,6 +14,8 @@ dpcmloop:
   INY
   CPY #$4
   BNE dpcmloop
+  LDA #$0F
+  STA $4015
   LDA #$1F
   STA $4015
   LDA #$00

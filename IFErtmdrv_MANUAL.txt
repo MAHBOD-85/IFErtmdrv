@@ -7,7 +7,7 @@ IFEware realtime NES music driver documentation
 This audio driver is meant for games with extremely low rom sizes and designed to be very modular allowing for addition or removal of features with ease and can integrate with any program's logic as easily as pasting in the code in
 soundeffects have to be handled externally but a temporary mute counter is provided for such purposes 
 there is no support for hardware envelope, length counter and hardware sweep but there is support for triangle linear counter trick
-this driver operates in $700 to $76F region of the work ram by default and requires 5 zeropage bytes
+this driver requires 106 work RAM bytes in the base version and 5 zeropage bytes
 
 ---
 
@@ -20,10 +20,10 @@ instrument.db (256 bytes)
 instrument2.db (256 bytes)
 songX.db (arbitrary count, 256 bytes)
 patterndataX.db (arbitrary count, size is multiples of 256 bytes but a limit of 3072 is advised)
-dpcmX.dmc (3 are allowed)
-dpcmtbl.db (16 bytes, can reside at the end of freqtbl)
+dpcmX.dmc (3 are allowed in percussive configuation, 15 in melodic)
+dpcmtbl.db (16 bytes in percussive configuration with the first 4 being reserved, 60 bytes in melodic)
 
-all files should be aligned to pages but you can merge them with eachother
+all files are advised to be aligned to pages but you can merge them with eachother
 
 ---
 
@@ -104,8 +104,12 @@ it contains values referenced by song header bunch and delay commands in orders 
 
 8. dpcmtbl.db
 
+8.1 percussive
 this table stores 3 $4010 to $4013 register patterns in groups of 4, first 4 bytes are reserved
 the DPCM playback is determined by noise channel's instrument, if it is $00 to $3F no DPCM will play, if it's $40 to $7F the first DPCM will play and vice versa (only works for primary instrument)
+
+8.2 melodic
+this table stores 15 $4010 to $4013 register patterns in groups of 4 (first byte is used for its loop flag and only that bit shall be enabled). the melodic configuration adds an additional channel that reads pattern bytes as instruments in the $XY configuration where $X is the DPCM number and $Y is the pitch, this sequence does not have the concept of note, pitch and instruments
 
 ---
 

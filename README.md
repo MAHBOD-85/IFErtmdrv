@@ -9,5 +9,5 @@ To use the driver in your game simply include IFErtmdrv in your NES game to be c
 For version Z also do the zsaw initialization procedure outlined in [the z-saw repo](https://github.com/zeta0134/z-saw).
 
 ### ca65 porting
-Execute the conversion script provided in the ifertmdrv folder and define the IFERTMDRVVARS and IFERTMDRVZP segments. To reference the values in the driver you may need to manually specify the zeropage values which ld65 conveniently warns you about. 
+Execute the conversion script provided in the ifertmdrv folder.
 For version Z it is advised that you get the original source and implement it the ca65 way, IFErtmdrv will interoperate with the z-saw registers.
