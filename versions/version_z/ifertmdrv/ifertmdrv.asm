@@ -179,6 +179,8 @@ skipfc:
 
   .include "ifertmdrv/finetuneeffect.asm"
 
+  .include "ifertmdrv/divisoreffect.asm"
+
 
   LDA [TMPpatddr],y
   CMP #$FF
@@ -195,7 +197,7 @@ skipff:
 
 
 
-  .include "ifertmdrv/divisoreffect.asm"
+
 
 
 
@@ -390,8 +392,7 @@ skippitchcorrect:
 
   LDA freqtbl,x
   STA APUregbuffer+2,y
-  INX
-  LDA freqtbl,x
+  LDA freqtbl+1,x
   STA APUregbuffer+3,y
 
 

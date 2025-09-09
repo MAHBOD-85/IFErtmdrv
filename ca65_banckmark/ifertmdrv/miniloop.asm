@@ -1,7 +1,7 @@
   LDA (TMPpatddr),y
   CMP #$F9
   BNE skipf9withdelay
-  INY
+  INC <TMPpatddr
   LDA (TMPpatddr),y
   CMP CHXminiloopflag,x
   BCC miniloophaspassed
@@ -14,7 +14,6 @@
   JMP skipf9
 
 miniloophaspassed:
-  INC <TMPpatddr
   INC <TMPpatddr
   INC <TMPpatddr
   DEY
