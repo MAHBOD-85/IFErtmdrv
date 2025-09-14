@@ -239,7 +239,7 @@ zsaw_pal_note_period_66:
   .byte $03, $0c, $01, $0d, $03, $0e, $00
 zsaw_pal_note_period_67:
 ; Note: G5, Target Frequency: 386.65, Actual Frequency: 386.29, Tuning Error: 0.36
-  .byte $01, $0b, $02, $0c, $01, $0c, $02, $0e
+  .byte $01, $0b, $03, $0c, $02, $0e
   .byte $00
 zsaw_pal_note_period_68:
 ; Note: Gs5, Target Frequency: 409.64, Actual Frequency: 409.11, Tuning Error: 0.54
@@ -270,10 +270,10 @@ zsaw_pal_note_period_76:
   .byte $01, $08, $01, $0e, $01, $0d, $00
 zsaw_pal_note_period_77:
 ; Note: F6, Target Frequency: 688.93, Actual Frequency: 688.17, Tuning Error: 0.77
-  .byte $01, $09, $01, $0d, $01, $0d, $00
+  .byte $01, $09, $02, $0d, $00
 zsaw_pal_note_period_78:
 ; Note: Fs6, Target Frequency: 729.90, Actual Frequency: 736.97, Tuning Error: 7.07
-  .byte $01, $0a, $01, $0d, $01, $0d, $00
+  .byte $01, $0a, $02, $0d, $00
 zsaw_pal_note_period_79:
 ; Note: G6, Target Frequency: 773.30, Actual Frequency: 781.30, Tuning Error: 8.00
   .byte $01, $09, $01, $0b, $00
@@ -288,16 +288,16 @@ zsaw_pal_note_period_82:
   .byte $01, $09, $01, $0d, $00
 zsaw_pal_note_period_83:
 ; Note: B6, Target Frequency: 974.30, Actual Frequency: 971.15, Tuning Error: 3.15
-  .byte $01, $0e, $01, $0f, $01, $0f, $01, $0f, $00
+  .byte $01, $0e, $03, $0f, $00
 zsaw_pal_note_period_84:
 ; Note: C7, Target Frequency: 1032.23, Actual Frequency: 1049.63, Tuning Error: 17.39
-  .byte $01, $0f, $01, $0d, $01, $0d, $00
+  .byte $01, $0f, $02, $0d, $00
 zsaw_pal_note_period_85:
 ; Note: Cs7, Target Frequency: 1093.61, Actual Frequency: 1060.34, Tuning Error: 33.28
-  .byte $01, $0f, $01, $0f, $01, $0c, $00
+  .byte $02, $0f, $01, $0c, $00
 zsaw_pal_note_period_86:
 ; Note: D7, Target Frequency: 1158.64, Actual Frequency: 1180.83, Tuning Error: 22.19
-  .byte $01, $0e, $01, $0f, $01, $0e, $00
+  .byte $02, $0e, $01, $0f, $00
 zsaw_pal_note_period_87:
 ; Note: Ds7, Target Frequency: 1227.54, Actual Frequency: 1267.23, Tuning Error: 39.69
   .byte $01, $0f, $01, $0a, $00
@@ -306,7 +306,7 @@ zsaw_pal_note_period_88:
   .byte $01, $0f, $01, $0b, $00
 zsaw_pal_note_period_89:
 ; Note: F7, Target Frequency: 1377.86, Actual Frequency: 1404.23, Tuning Error: 26.36
-  .byte $01, $0f, $01, $0f, $01, $0f, $00
+  .byte $03, $0f, $00
 zsaw_pal_note_period_90:
 ; Note: Fs7, Target Frequency: 1459.80, Actual Frequency: 1443.24, Tuning Error: 16.56
   .byte $01, $0d, $01, $0e, $00
@@ -324,7 +324,7 @@ zsaw_pal_note_period_94:
   .byte $01, $0f, $01, $0e, $00
 zsaw_pal_note_period_95:
 ; Note: B7, Target Frequency: 1948.59, Actual Frequency: 2120.67, Tuning Error: 172.08
-  .byte $01, $0f, $01, $0f, $00
+  .byte $02, $0f, $00
 zsaw_pal_note_period_96:
 ; Note: C8, Target Frequency: 2064.46, Actual Frequency: 2120.67, Tuning Error: 56.21
-  .byte $01, $0f, $01, $0f, $00
+  .byte $02, $0f, $00
