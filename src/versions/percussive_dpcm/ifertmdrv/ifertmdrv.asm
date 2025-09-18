@@ -235,8 +235,8 @@ skipfe:
   LDA CHXbaseinst,x
   CMP #$FF
   BNE instisreatined
-  LDA [TMPpatddr],y
   INC <TMPpatddr
+  LDA [TMPpatddr],y
 instisreatined:
   STA CHXinstaddr,x
   .include "ifertmdrv/exclusive_modules/percussivedpcminstrument.asm"
