@@ -6,6 +6,8 @@
 ;;;;;;;;;;;;;;;
 
   .include "ifertmdrv/variables.asm"
+  .include "ifertmdrv/common_modules/songformatvariables.asm"
+
 
 ;;;;;;;;;;;;;;;
 
@@ -94,36 +96,27 @@ NMI:
   .bank 1
   .org $A000
 song1:
-  .incbin "song1.db"
+  .include "centralmusic.asm"
 
 
   .bank 2
   .org $C000
-  .incbin "ripped00.dmc"
-  .org $C400
-  .incbin "ripped01.dmc"
-  .org $C800
-  .incbin "ripped02.dmc"
-  .org $CC00
-  .incbin "ripped03.dmc"
-  .org $D000
-  .incbin "ripped04.dmc"
-  .org $D400
+  .incbin "dpcm.dmc"
 dpcmtbl:
   .incbin "dpcmtbl.db"
 
 
   .bank 3
-  .org $FC00
+  .org $EC00
 speedtbl:
   .incbin "speedtbl.db"
-  .org $FF00
+  .org $EF00
 freqtbl:
   .incbin "freqtbl.db"
-  .org $FD00
+  .org $ED00
 instrument:
   .incbin "instrument.db"
-  .org $FE00
+  .org $EE00
 instrument2:
   .incbin "instrument2.db"
 

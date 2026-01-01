@@ -4,10 +4,10 @@ IFEware realtime NES music driver documentation
 
 1. Introduction
 
-This audio driver is meant for games with extremely low rom sizes and designed to be very modular allowing for addition or removal of features with ease and can integrate with any program's logic as easily as pasting in the code in
-soundeffects have to be handled externally but a temporary mute counter is provided for such purposes 
+This audio driver is meant for games with extremely low rom sizes and designed to be very modular allowing for addition or removal of features with ease and can integrate with any program's logic as easily as including the files
+soundeffects have to be handled externally but a temporary mute counter is provided for such purposes
 there is no support for hardware envelope, length counter and hardware sweep but there is support for triangle linear counter trick
-this driver requires 106 work RAM bytes in the base version and 5 zeropage bytes
+this driver requires 106 work RAM bytes for the base version and 5 zeropage bytes
 
 ---
 
@@ -18,8 +18,7 @@ the driver operates on the following file types
 freqtbl.db (256 bytes)
 instrument.db (256 bytes)
 instrument2.db (256 bytes)
-songX.db (arbitrary count, 256 bytes)
-patterndataX.db (arbitrary count, size is multiples of 256 bytes but a limit of 3072 is advised)
+song.asm (arbitrary count, arbitrary bytes)
 dpcmX.dmc (3 are allowed in percussive configuation, 15 in melodic)
 dpcmtbl.db (16 bytes in percussive configuration with the first 4 being reserved, 60 bytes in melodic)
 
@@ -48,83 +47,87 @@ $E0 means don't change the $4000,4x register pattern and only do pitch changes
 
 ---
 
-5. songX.db
+5. song.asm
 
-orders are laid out in bunches of four and consist of pulse 1, pulse 2, triangle and noise/DPCM, they are formatted in $XY and index the pattern data in $0YX0 offset from song begin (but nothing is stopping you from using songX.db as pattern data)
-this value can be set to $00 to mean leave the pattern running and don't set its values
+5.1 orders
 
-$10 $XX $YY
-this is header information and always should come first, it can also be applied mid song and always applies itself to the next pattern
+orders are laid out in a bunch of words
+this value can be set to a single byte of $00 to mean leave the pattern running and don't set its values
+
+.byte PAT_INFO $XX $YY
+this is header information and always should come first, it can also be applied mid song and always applies itself to the next pattern should you cross it
 $XX sets pattern length to a zero based value
 $YY points to an address in speedtbl.db to pull 4 values from
 
-$20 $XX $YY sets the orders position to the little endian value specified by the next bytes $YY can be zero to signify no change to the high byte 
+.byte PAT_JUMP
+.word LOCATION
+sets the orders position to the desired location
 
----
+be aware that page crossing cannot be done without jumping and orders can be completely separate from pattern data
 
-6. patterndataX.db
+5.2 pattern data
 
 effects and notes are processed in this order: 
 
-$F9 $XX $YY
-is a miniloop effect and consists of 3 bytes, it checks the channel's miniloop flag against the second byte and if it's less or equal, it will jump to a position in the page defined by the third byte and increments the channel's miniloop flag. and if it's more than the second byte it will pass thru and the miniloop flag will be reset to zero
+.byte EFF_MINILOOP, $XX, <(LOCATION-*)
+is a miniloop effect and consists of 3 bytes, it checks the channel's miniloop flag against the second byte and if it's less or equal, it will branch to a position defined by the third byte and increments the channel's miniloop flag. and if it's more than the second byte it will pass thru
 
-$F8 $XX
+.byte EFF_MINILOOPFLAG, $XX
 sets miniloop flag to the second byte
 
-$FC $XX
+.byte INST1, $XX
 sets retained mode instrument to second byte, if the byte is $FF the channel goes into immediate instrument mode
 
-$FD $XX
+.byte INST2, $XX
 sets retained mode instrument for odd notes to second byte, no immediate mode for this one
 
-$FB $XX
+.byte EFF_TRANSPOSE, $XX
 transposes a note by a value defined by the second byte (must be even)
 
-$FA $XX
+.byte EFF_FINETUNE, $XX
 sets base finetune to the second byte (must be even)
 
-$F4 $XX
+.byte EFF_DIVISOR, $XX
 sets pattern speed divisor to the second byte
 
-$FF $XX 
-jumps into a position in the current page defined by the next byte
+.byte JUMP, <(LOCATION-*)
+branches into a position defined by the next byte
 
-note goes here, if the instruments are in immediate mode instrument follows next, if it's $FE it's cosidered a NOP and there is no need to follow with instrument in immediate mode and if the note is an odd number it is rounded down and the secondary instrument is used
+note goes here (refer to src/common_modules/songformatvariables.asm for note syntax), if the instruments are in immediate mode instrument follows next, if it's I it's cosidered a NOP and there is no need to follow with instrument in immediate mode and if the note has a +1 next to it the secondary instrument is used
 
-$FX $YY
+.byte DELAYX, $YY
 this is a sequence break effect and values for X are 0 to 3 which offset the channel's position in the groove speeds and the next byte sets the channel's frame counter to next byte to an arbitrary address in speedtbl.db
 
 ---
 
-7. speedtbl.db
-it contains values referenced by song header bunch and delay commands in orders and instruments, if the region is PAL an $80 offset is applied
+6. speedtbl.db
+it contains values referenced by song header bunch and delay commands in orders and instruments, if the region is PAL or Dendy an $80 offset is applied
 
 ---
 
-8. dpcmtbl.db
+7. dpcmtbl.db
 
-8.1 percussive
+7.1 percussive
 this table stores 3 $4010 to $4013 register patterns in groups of 4, first 4 bytes are reserved
 the DPCM playback is determined by noise channel's instrument, if it is $00 to $3F no DPCM will play, if it's $40 to $7F the first DPCM will play and vice versa (only works for primary instrument)
 
-8.2 melodic
+7.2 melodic
 this table stores 15 $4010 to $4013 register patterns in groups of 4 (first byte is used for its loop flag and only that bit shall be enabled). the melodic configuration adds an additional channel that reads pattern bytes as instruments in the $XY configuration where $X is the DPCM number and $Y is the pitch, this sequence does not have the concept of note, pitch and instruments
 
 ---
 
-9. special modes
+8. special modes
 
-9.1 temporary mute counter
+8.1 temporary mute counter
 this counter suspends buffer writes of a specific channel for X amount of frames
 
-9.2 finetune
+8.2 finetune
 this adds or subtracts values from the low byte of a channel's note, BE CAREFUL that this will not account for risky notes in 2A03 APU and will wrap around the register
 
-9.3 region
+8.3 region
 the Region variable is where you set the region for the driver before you initialize it, 0 is NTSC, 1 is PAL and 2 is Dendy
 
 ---
 
-10. version Z
+9. version Z
 this version has 5 patterns per order and the z-saw channel is controlled by %XXYYYYYY of what is normally a $4000,4x pattern with %XX being timber and %YYYYYY being volume

@@ -1,10 +1,9 @@
-  LDA [TMPpatddr],y
+  LDA [TMPpataddr],y
   CMP #$F4
-  BNE skipf4withdelay
-  INC <TMPpatddr
-  LDA [TMPpatddr],y
+  BNE skipf4
+  INY
+  LDA [TMPpataddr],y
   STA CHXdivisorcount,x
-  INC <TMPpatddr
-skipf4withdelay:
+  INY
 
 skipf4:

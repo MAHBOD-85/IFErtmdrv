@@ -1,10 +1,9 @@
-  LDA [TMPpatddr],y
+  LDA [TMPpataddr],y
   CMP #$FB
-  BNE skipfbwithdelay
-  INC <TMPpatddr
-  LDA [TMPpatddr],y
+  BNE skipfb
+  INY
+  LDA [TMPpataddr],y
   STA CHXtranspose,x
-  INC <TMPpatddr
-skipfbwithdelay:
+  INY
 
 skipfb:

@@ -1,4 +1,4 @@
-  LDA [TMPpatddr],y
+  LDA [TMPpataddr],y
   AND #$01
   BEQ notinst2
   LDA CHXbaseinst2,x

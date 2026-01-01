@@ -1,14 +1,16 @@
-
-
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; IFEWARE'S REALTIME AUDIO DRIVER TM BEGIN
 
+
+
   ; ORDERS TIMER
+
 
 
   LDX currentPatternFrameTimer
   DEC currentPatternFrameTimer
   CPX #$00
   BNE skippatternprogressincrement
+
   LDY currentPatternSpeed
   LDA patternSpeedX,y
   INC currentPatternSpeed
@@ -19,56 +21,54 @@
   LDY #$00
   STY currentPatternSpeed
 
-
 skipresetpatternspeed:
-
-
   LDX currentPatternProgress
   INC currentPatternProgress
   CPX patternLength
-
   BNE skippatternprogressincrement
+
   LDX #$00
   STX currentPatternProgress
-
   JMP skipthisthingtoo
+
 skippatternprogressincrement:
   JMP ordersend
+
 skipthisthingtoo:
 
 
 
   ; ORDERS PARSER
 
+
+
   LDY #$00
-  LDA [songAddrProgress],y
+  LDA (songAddrProgress),y
   CMP #$20
   BNE ordersnotjmp
+
   INY
-  LDA [songAddrProgress],y
+  LDA (songAddrProgress),y
   TAX
   INY
-  LDA [songAddrProgress],y
-  BEQ nahitsprobablynothing
-  STA <songAddr
-nahitsprobablynothing:
+  LDA (songAddrProgress),y
   STX <songAddrProgress
+  STA <songAddr
   DEY
   DEY
 ordersnotjmp:
 
-
-
-  LDA [songAddrProgress],y
+  LDA (songAddrProgress),y
   CMP #$10
   BNE ignoreheader
+
   INY
-  LDA [songAddrProgress],y
+  LDA (songAddrProgress),y
   STA patternLength
   LDX #$0
   INY
   STY ExtraReg
-  LDA [songAddrProgress],y
+  LDA (songAddrProgress),y
 
   LDY <Region
   CPY #$01
@@ -84,26 +84,17 @@ speedsetloop:
   INX
   CPX #$04
   BNE speedsetloop
+
   LDY ExtraReg
   INY
 
-
 ignoreheader:
-
-
-
-
-
-ordersnotspecialbyte:
   LDA patternSpeedX
   STA currentPatternFrameTimer
   LDX #$00
 
-
-
 ordersetloop:
-  .include "ifertmdrv/exclusive_modules/shortmodeaddressing.asm"
-
+  .include "ifertmdrv/exclusive_modules/longmodeaddressing.asm"
 
   TYA
   CLC
@@ -111,28 +102,20 @@ ordersetloop:
   STA <songAddrProgress
 
 ordersend:
-
-
-
-  ; PATTERN PARSER
-  ; THIS CODE IS VERY VERY GROSS, MAY GOD HELP THE SOUL OF THOSE WHO TRY TO STUDY IT
-
-  ;LDA #$5F
-  ;STA $2001
-
   LDX #$00
   STX channel
+
 patternparserloop:
   LDA CHXpataddr,x
-  STA <TMPpatddr
+  STA <TMPpataddr
   LDA CHXpataddr+1,x
-  STA <TMPpatddr+1
-
-
+  STA <TMPpataddr+1
+  LDY #$00
   LDA CHXframetimer,x
   DEC CHXframetimer,x
   CMP #$00
   BNE skipresetchannelspeed
+
   LDX channel
   LDA CHXspeed,x
   TAX
@@ -143,35 +126,31 @@ patternparserloop:
   LDA CHXspeed,x
   CMP #$04
   BCC skipthisthingtootwo
+
   SBC #$04
   STA CHXspeed,x
-  JMP skipthisthingtootwo
+  BCS skipthisthingtootwo
+
 skipresetchannelspeed:
   JMP patternend
-skipthisthingtootwo:
 
+skipthisthingtootwo:
 
   .include "ifertmdrv/common_modules/divisoraction.asm"
 
-
   LDY #$00
-
 
   .include "ifertmdrv/common_modules/miniloop.asm"
 
-
-
-  LDA [TMPpatddr],y
+  LDA (TMPpataddr),y
   CMP #$FC
-  BNE skipfcwithdelay
-  INC <TMPpatddr
-  LDA [TMPpatddr],y
+  BNE skipfc
+
+  INY
+  LDA (TMPpataddr),y
   STA CHXbaseinst,x
-  INC <TMPpatddr
-skipfcwithdelay:
-
+  INY
 skipfc:
-
 
   .include "ifertmdrv/common_modules/secondinsteffect.asm"
 
@@ -181,39 +160,47 @@ skipfc:
 
   .include "ifertmdrv/common_modules/divisoreffect.asm"
 
+  STY ExtraReg
 
-  LDA [TMPpatddr],y
+  LDA (TMPpataddr),y
   CMP #$FF
-  BNE skipffwithdelay
-  INC <TMPpatddr
-  LDA [TMPpatddr],y
-  STA <TMPpatddr
-skipffwithdelay:
+  BNE skipff
+
+  INY
+  LDA (TMPpataddr),y
+  BMI minusffjump
+
+  ADC ExtraReg
+  CLC
+  ADC <TMPpataddr
+  STA <TMPpataddr
+  LDA #$00
+  TAY
+  ADC <TMPpataddr+1
+  STA <TMPpataddr+1
+  JMP skipff
+
+minusffjump:
+  ADC ExtraReg
+  CLC
+  ADC <TMPpataddr
+  STA <TMPpataddr
+  LDA <TMPpataddr+1
+  ADC #$FF
+  STA <TMPpataddr+1
+  LDY #$00
 
 skipff:
-
-
-
-
-
-
-
-
-
   LDX channel
-
-  LDA [TMPpatddr],y
+  LDA (TMPpataddr),y
   CMP #$FE
-  BNE skipfe
-  JMP instisimmediate
+  BEQ instisimmediate
 
-skipfe:
-  TYA
+  LDA #$00
   STA CHXinstdelay,x
   LDA CHXbasefinetune,x
   STA CHXfinetune,x
-
-  LDA [TMPpatddr],y
+  LDA (TMPpataddr),y
 
   .include "ifertmdrv/common_modules/transposeaction.asm"
 
@@ -222,28 +209,29 @@ skipfe:
 
   .include "ifertmdrv/common_modules/secondinstaction.asm"
 
-
   LDA CHXbaseinst,x
   CMP #$FF
-  BNE instisreatined
-  INC <TMPpatddr
-  LDA [TMPpatddr],y
-instisreatined:
-  STA CHXinstaddr,x
-instisimmediate:
-  INC <TMPpatddr
+  BNE instisretained
 
+  INY
+  LDA (TMPpataddr),y
+
+instisretained:
+  STA CHXinstaddr,x
+
+instisimmediate:
+  INY
 
   .include "ifertmdrv/common_modules/sequencebreak.asm"
 
-
-
 patternend:
 
-  LDY #$00
-  LDA <TMPpatddr
+  TYA
+  CLC
+  ADC <TMPpataddr
   STA CHXpataddr,x
-  LDA <TMPpatddr+1
+  LDA #$00
+  ADC <TMPpataddr+1
   STA CHXpataddr+1,x
   INX
   INX
@@ -252,20 +240,15 @@ patternend:
   STX channel
   CPX #$14
   BEQ patternendforrealz
+
   JMP patternparserloop
+
 patternendforrealz:
-
-
-
-  ; GROSS CODE FINISHED #############################################
 
 
 
   ; INSTRUMENT LOOP
 
-
-  ;LDA #$1B
-  ;STA $2001
 
 
   LDX #$00
@@ -276,46 +259,42 @@ instloop:
 
   CMP #$FF
   BEQ dontdecrementdelay
+
   DEC CHXinstdelay,x
 dontdecrementdelay:
   JMP instloopskip
 
-
-
 ignoredelay:
-
-
 
   LDY CHXinstaddr,x
   LDA instrument,y
   CMP #$C0
-  BNE notspecialbytewithdelay
+  BNE notspecialbyte
+
 specialbyte:
   LDA instrument2,y
   STA CHXinstaddr,x
   TAY
   LDA instrument,y
 
-notspecialbytewithdelay:
+notspecialbyte:
   CMP #$E0
   BEQ instnop
 
+  STA APUregbuffer,x
 
-
-
-
-notspecialbyte:
-  STA APUregbuffer+0,x
 instnop:
   LDA instrument2,y
   AND #$01
   BNE instsetfinetune
+
   LDA instrument2,y
   CLC
   ADC CHXnote,x
   STA CHXnote,x
   INC CHXinstaddr,x
   JMP instdelay
+
 instsetfinetune:
   LDA instrument2,y
   AND #$FE
@@ -324,17 +303,17 @@ instsetfinetune:
   STA CHXfinetune,x
   INC CHXinstaddr,x
 
-
 instdelay:
   LDY CHXinstaddr,x
   LDA instrument,y
   CMP #$D0
-  BNE ignoreinstdelaywithdelay
-  LDA instrument2,y
+  BNE ignoreinstdelay
 
+  LDA instrument2,y
   LDY <Region
   CPY #$01
   BCC skipspeedcorrect2
+
   ADC #$7F
 skipspeedcorrect2:
 
@@ -342,9 +321,6 @@ skipspeedcorrect2:
   LDA speedtbl,y
   STA CHXinstdelay,x
   INC CHXinstaddr,x
-ignoreinstdelaywithdelay:
-
-
 ignoreinstdelay:
 
 instloopskip:
@@ -359,40 +335,26 @@ instloopskip:
 instloopend:
 
 
-
-
-
-
   LDY #$00
 notewriteloop:
   LDX CHXnote,y
-
-
   LDA <Region
   CMP #$01
   BNE skippitchcorrect
+
   CPY #$0C
   BEQ skippitchcorrect
+
   INX
   INX
 skippitchcorrect:
-
-
-
 
   LDA freqtbl,x
   STA APUregbuffer+2,y
   LDA freqtbl+1,x
   STA APUregbuffer+3,y
 
-
-
   .include "ifertmdrv/common_modules/finetuneaction.asm"
-
-
-
-
-
 
   INY
   INY
@@ -401,10 +363,16 @@ skippitchcorrect:
   CPY #$10
   BNE notewriteloop
 
-  LDA $730
+
+
+  ; ZSAW CODE
+
+
+
+  LDA APUregbuffer + $10
   AND #$3F
   JSR zsaw_set_volume
-  LDA $730
+  LDA APUregbuffer + $10
   LSR a
   LSR a
   LSR a
@@ -419,44 +387,36 @@ skippitchcorrect:
   JSR zsaw_play_note ; enables DMC IRQ
 
 
-  ;LDA #$3F
-  ;STA $2001
-
   ; AUDIO BUFFER WRITE
+
 
   LDA APUregbuffer+8
   AND #$0F
   STA APUregbuffer+8
-
-
-
-
-
-
-
-
-
 
   LDX #$00
 audioloop:
 
   LDA CHXmutetimer,x
   BEQ dontdecrementmute
+
   DEC CHXmutetimer,x
   JMP ignorebufferwrite
 dontdecrementmute:
 
 audiosubloop:
-  LDA APUregbuffer+0,x
+  LDA APUregbuffer,x
   STA $4000,x
   INX
   TXA
   AND #$03
   CMP #$03
   BNE audiosubloop
-  LDA APUregbuffer+0,x
+
+  LDA APUregbuffer,x
   CMP shitFuckRegPrev,x
   BEQ bufferwritten
+
   STA $4000,x
   STA shitFuckRegPrev,x
   JMP bufferwritten
@@ -471,14 +431,12 @@ bufferwritten:
   CPX #$10
   BNE audioloop
 
-
-
   LDA APUregbuffer+$B
   STA $400B
 
 
-  ; AUDIO BUFFER WRITE FINISH
 
+  ; AUDIO BUFFER WRITE FINISH
 
 
 

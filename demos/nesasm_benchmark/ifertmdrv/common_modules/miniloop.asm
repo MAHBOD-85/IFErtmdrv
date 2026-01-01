@@ -1,32 +1,47 @@
-  LDA [TMPpatddr],y
+  ; Normally this effect is expected to come first so jump compensation is not added here.
+
+  LDA [TMPpataddr],y
   CMP #$F9
-  BNE skipf9withdelay
-  INC <TMPpatddr
-  LDA [TMPpatddr],y
+  BNE skipf9
+  INY
+  LDA [TMPpataddr],y
   CMP CHXminiloopflag,x
   BCC miniloophaspassed
-
   INC CHXminiloopflag,x
-  INC <TMPpatddr
-  LDA [TMPpatddr],y
-  STA <TMPpatddr
-  BCS skipf9
+  INC <TMPpataddr
+  LDA [TMPpataddr],y
+  BMI minusf9jump
+
+  ADC <TMPpataddr
+  STA <TMPpataddr
+  LDA #$00
+  DEY
+  ADC <TMPpataddr+1
+  STA <TMPpataddr+1
+  JMP skipf9
+
+minusf9jump:
+
+  ADC <TMPpataddr
+  STA <TMPpataddr
+  LDA <TMPpataddr+1
+  ADC #$FF
+  STA <TMPpataddr+1
+  DEY
+  JMP skipf9
 
 miniloophaspassed:
-  INC <TMPpatddr
-  INC <TMPpatddr
-
-skipf9withdelay:
+  INY
+  INY
 
 skipf9:
 
-  LDA [TMPpatddr],y
+  LDA [TMPpataddr],y
   CMP #$F8
-  BNE skipf8withdelay
-  INC <TMPpatddr
-  LDA [TMPpatddr],y
+  BNE skipf8
+  INY
+  LDA [TMPpataddr],y
   STA CHXminiloopflag,x
-  INC <TMPpatddr
-skipf8withdelay:
+  INY
 
 skipf8:

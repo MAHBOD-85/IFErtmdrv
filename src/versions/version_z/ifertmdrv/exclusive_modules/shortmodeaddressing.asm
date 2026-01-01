@@ -1,10 +1,10 @@
 
-  LDA [songAddrProgress],y
+  LDA (songAddrProgress),y
   BEQ ordersnop
   AND #$F0
   STA CHXpataddr,x
 
-  LDA [songAddrProgress],y
+  LDA (songAddrProgress),y
   AND #$0F
   CLC
   ADC <songAddr

@@ -1,15 +1,15 @@
-  LDA [TMPpatddr],y
+  LDA [TMPpataddr],y
   AND #$FC
   CMP #$F0
-  BNE skipfxwithdelay
-  LDA [TMPpatddr],y
+  BNE skipfx
+  LDA [TMPpataddr],y
   CLC
   ADC CHXspeed,x
   AND #$03
   STA CHXspeed,x
 
-  INC <TMPpatddr
-  LDA [TMPpatddr],y
+  INY
+  LDA [TMPpataddr],y
 
   LDX <Region
   CPX #$01
@@ -23,7 +23,5 @@ skipdelayspeedcorrect:
   STA CHXframetimer,x
   STA CHXaccountfordivisor,x     ; DIVISOR INTEROP CODE
   INC CHXaccountfordivisorflag,x ; DIVISOR INTEROP CODE
-  INC <TMPpatddr
-skipfxwithdelay:
-
+  INY
 skipfx:

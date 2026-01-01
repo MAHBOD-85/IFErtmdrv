@@ -1,50 +1,21 @@
-  ; TAKE THIS ONE WITH A HUGE MOUNTAIN OF SALT
 
-  LDA [songAddrProgress],y
+  LDA (songAddrProgress),y
+  BEQ ordersnop
   INY
-  CMP #$FF
-  BEQ ordersnop1
   STA CHXpataddr,x
-  INY
-  LDA [songAddrProgress],y
-  LSR a
-  LSR a
-  LSR a
-  LSR a
-  CLC
-  ADC SongAddr
+  LDA (songAddrProgress),y
   STA CHXpataddr+1,x
   LDA #$00
   STA CHXspeed,x
   STA CHXframetimer,x
   STA CHXminiloopflag,x
-  DEY
-ordersnop1:
-  INX
-  INX
-  INX
-  INX
-
-  LDA [songAddrProgress],y
+  LDA CHXdivisorcount,x
+  STA CHXdivisorprogress,x
+ordersnop:
   INY
-  CMP #$FF
-  BEQ ordersnop1
-  STA CHXpataddr,x
-  LDA [songAddrProgress],y
-  AND #$0F
-  CLC
-  ADC SongAddr
-  STA CHXpataddr+1,x
-  LDA #$00
-  STA CHXspeed,x
-  STA CHXframetimer,x
-  STA CHXminiloopflag,x
-ordersnop2:
   INX
   INX
   INX
   INX
-  INY
-  CPX #$18
+  CPX #$14
   BNE ordersetloop
-

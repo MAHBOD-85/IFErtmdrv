@@ -1,5 +1,5 @@
   .org $F0
-TMPpatddr:
+TMPpataddr:
   .ds 2
 songAddrProgress:
   .ds 1
@@ -39,7 +39,7 @@ patternLength:
 patternSpeedX:
   .ds 4
 
-  .ds 5
+
 
 
 CHXbaseinst:

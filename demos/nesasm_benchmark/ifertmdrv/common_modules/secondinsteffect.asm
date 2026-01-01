@@ -1,11 +1,10 @@
 
-  LDA [TMPpatddr],y
+  LDA [TMPpataddr],y
   CMP #$FD
-  BNE skipfdwithdelay
-  INC <TMPpatddr
-  LDA [TMPpatddr],y
+  BNE skipfd
+  INY
+  LDA [TMPpataddr],y
   STA CHXbaseinst2,x
-  INC <TMPpatddr
-skipfdwithdelay:
+  INY
 
 skipfd:
