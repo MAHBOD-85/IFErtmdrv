@@ -8,33 +8,31 @@
   CMP CHXminiloopflag,x
   BCC miniloophaspassed
   INC CHXminiloopflag,x
-  INC <TMPpataddr
+  INY
   LDA (TMPpataddr),y
+  ADC #$01
   BMI minusf9jump
 
   ADC <TMPpataddr
   STA <TMPpataddr
-  LDA #$00
-  DEY
-  ADC <TMPpataddr+1
-  STA <TMPpataddr+1
-  JMP skipf9
+  BCC skipf9
+  INC <TMPpataddr+1
+  BCS skipf9
 
 minusf9jump:
 
-  ADC <TMPpataddr
+  ADC <TMPpataddr  LDY #$00
   STA <TMPpataddr
-  LDA <TMPpataddr+1
-  ADC #$FF
-  STA <TMPpataddr+1
-  DEY
-  JMP skipf9
+  BCS skipf9
+  DEC <TMPpataddr+1
+  BCC skipf9
 
 miniloophaspassed:
   INY
   INY
 
 skipf9:
+  LDY #$00
 
   LDA (TMPpataddr),y
   CMP #$F8

@@ -63,8 +63,6 @@ $YY points to an address in speedtbl.db to pull 4 values from
 .word LOCATION
 sets the orders position to the desired location
 
-be aware that page crossing cannot be done without jumping and orders can be completely separate from pattern data
-
 5.2 pattern data
 
 effects and notes are processed in this order: 
