@@ -48,10 +48,10 @@ skipthisthingtoo:
   BNE ordersnotjmp
 
   INY
-  LDA (songAddrProgress),y
+  LDA [songAddrProgress],y
   TAX
   INY
-  LDA (songAddrProgress),y
+  LDA [songAddrProgress],y
   STX <songAddrProgress
   STA <songAddr
   DEY
@@ -100,6 +100,8 @@ ordersetloop:
   CLC
   ADC <songAddrProgress
   STA <songAddrProgress
+  BCC ordersend
+  INC <songAddr
 
 ordersend:
   LDX #$00
@@ -173,29 +175,27 @@ skipnondpcmeffects: ; MELODIC DPCM CODE
 
   INY
   LDA [TMPpataddr],y
+  ADC ExtraReg
+  CLC
   BMI minusffjump
 
-  ADC ExtraReg
-  CLC
   ADC <TMPpataddr
   STA <TMPpataddr
-  LDA #$00
-  TAY
-  ADC <TMPpataddr+1
-  STA <TMPpataddr+1
-  JMP skipff
+  LDY #$00
+  BCC skipff
+  INC <TMPpataddr+1
+  BCS skipff
 
 minusffjump:
-  ADC ExtraReg
-  CLC
+
   ADC <TMPpataddr
   STA <TMPpataddr
-  LDA <TMPpataddr+1
-  ADC #$FF
-  STA <TMPpataddr+1
   LDY #$00
+  BCS skipff
+  DEC <TMPpataddr+1
 
 skipff:
+
   LDX channel
   LDA [TMPpataddr],y
   CMP #$FE

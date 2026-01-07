@@ -21,7 +21,8 @@
 
 minusf9jump:
 
-  ADC <TMPpataddr  LDY #$00
+  ADC <TMPpataddr
+  LDY #$00
   STA <TMPpataddr
   BCS skipf9
   DEC <TMPpataddr+1
