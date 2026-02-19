@@ -14,6 +14,7 @@
   BMI minusf9jump
 
   ADC <TMPpataddr
+  LDY #$00
   STA <TMPpataddr
   BCC skipf9
   INC <TMPpataddr+1
@@ -33,7 +34,6 @@ miniloophaspassed:
   INY
 
 skipf9:
-  LDY #$00
 
   LDA (TMPpataddr),y
   CMP #$F8

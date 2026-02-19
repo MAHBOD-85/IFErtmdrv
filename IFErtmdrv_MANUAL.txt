@@ -51,7 +51,7 @@ $E0 means don't change the $4000,4x register pattern and only do pitch changes
 
 5.1 orders
 
-orders are laid out in a bunch of words
+orders are laid out in a bunch of big endian words
 this value can be set to a single byte of $00 to mean leave the pattern running and don't set its values
 
 .byte PAT_INFO $XX $YY
@@ -60,7 +60,7 @@ $XX sets pattern length to a zero based value
 $YY points to an address in speedtbl.db to pull 4 values from
 
 .byte PAT_JUMP
-.word LOCATION
+.byte >LOCATION, <LOCATION
 sets the orders position to the desired location
 
 5.2 pattern data

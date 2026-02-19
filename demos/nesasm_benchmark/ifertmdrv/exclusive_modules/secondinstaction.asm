@@ -3,5 +3,5 @@
   BEQ notinst2
   LDA CHXbaseinst2,x
   STA CHXinstaddr,x
-  BCC skipdpcminst
+  JMP skipdpcminst
 notinst2:

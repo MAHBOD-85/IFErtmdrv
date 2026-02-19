@@ -2,9 +2,9 @@
   LDA [songAddrProgress],y
   BEQ ordersnop
   INY
-  STA CHXpataddr,x
-  LDA [songAddrProgress],y
   STA CHXpataddr+1,x
+  LDA [songAddrProgress],y
+  STA CHXpataddr,x
   LDA #$00
   STA CHXspeed,x
   STA CHXframetimer,x

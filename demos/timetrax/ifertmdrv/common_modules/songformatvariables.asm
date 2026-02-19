@@ -1,0 +1,142 @@
+A0 = $00
+AS0= $02
+B0 = $04
+
+C1 = $06
+CS1= $08
+D1 = $0A
+DS1= $0C
+E1 = $0E
+F1 = $10
+FS1= $12
+G1 = $14
+GS1= $16
+A1 = $18
+AS1= $1A
+B1 = $1C
+
+C2 = $1E
+CS2= $20
+D2 = $22
+DS2= $24
+E2 = $26
+F2 = $28
+FS2= $2A
+G2 = $2C
+GS2= $2E
+A2 = $30
+AS2= $32
+B2 = $34
+
+C3 = $36
+CS3= $38
+D3 = $3A
+DS3= $3C
+E3 = $3E
+F3 = $40
+FS3= $42
+G3 = $44
+GS3= $46
+A3 = $48
+AS3= $4A
+B3 = $4C
+
+C4 = $4E
+CS4= $50
+D4 = $52
+DS4= $54
+E4 = $56
+F4 = $58
+FS4= $5A
+G4 = $5C
+GS4= $5E
+A4 = $60
+AS4= $62
+B4 = $64
+
+C5 = $66
+CS5= $68
+D5 = $6A
+DS5= $6C
+E5 = $6E
+F5 = $70
+FS5= $72
+G5 = $74
+GS5= $76
+A5 = $78
+AS5= $7A
+B5 = $7C
+
+C6 = $7E
+CS6= $80
+D6 = $82
+DS6= $84
+E6 = $86
+F6 = $88
+FS6= $8A
+G6 = $8C
+GS6= $8E
+A6 = $90
+AS6= $92
+B6 = $94
+
+C7 = $96
+CS7= $98
+D7 = $9A
+DS7= $9C
+E7 = $9E
+
+
+NF=$EE
+NE=$EC
+ND=$EA
+NC=$E8
+NB=$E6
+NA=$E4
+N9=$E2
+N8=$E0
+N7=$DE
+N6=$DC
+N5=$DA
+N4=$D8
+N3=$D6
+N2=$D4
+N1=$D2
+N0=$D0
+
+PNF=$CE
+PNE=$CC
+PND=$CA
+PNC=$C8
+PNB=$C6
+PNA=$C4
+PN9=$C2
+PN8=$C0
+PN7=$BE
+PN6=$BC
+PN5=$BA
+PN4=$B8
+PN3=$B6
+PN2=$B4
+PN1=$B2
+PN0=$B0
+
+EFF_WAVEPHASE = $F5
+EFF_MINILOOP = $F9
+EFF_MINILOOPFLAG = $F8
+INST1 = $FC
+INST2 = $FD
+EFF_TRANSPOSE = $FB
+EFF_FINETUNE = $FA
+JUMP = $FF
+EFF_DIVISOR = $F4
+DELAY0 = $F0
+DELAY1 = $F1
+DELAY2 = $F2
+DELAY3 = $F3
+
+PAT_INFO = $10
+PAT_JUMP = $20
+
+I = $FE
+OFF = $A0
