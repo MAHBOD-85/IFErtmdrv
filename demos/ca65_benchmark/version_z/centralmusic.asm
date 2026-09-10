@@ -5,9 +5,9 @@ mc_songstart:
 
   .byte >mc_pattern3, <mc_pattern3
   .byte >mc_pattern5, <mc_pattern5
-  .byte >mc_pattern4, <mc_pattern4
-  .byte >mc_pattern6, <mc_pattern6
   .byte >mc_pattern2, <mc_pattern2
+  .byte >mc_pattern6, <mc_pattern6
+  .byte >mc_pattern4, <mc_pattern4
 
   .byte PAT_JUMP
   .word mc_songstart
@@ -22,8 +22,10 @@ mc_pattern1loop:
 
 
 mc_pattern2:
+  .byte INST1, tridrum-instrument
+  .byte INST2, silence-instrument
 mc_pattern2loop:
-  .byte $0E, I
+  .byte F3, C4+1
   .byte JUMP, <(mc_pattern2loop-*)
 
 mc_pattern3:
@@ -34,7 +36,7 @@ mc_pattern3loop:
   .byte JUMP, <(mc_pattern3loop-*)
 
 mc_pattern4:
-  .byte INST1, pulse-instrument
+  .byte INST1, sawinst-instrument
 mc_pattern4loop:
   .byte C2, I, C2, C2, C3, G2, FS2, F2, I, F2, I, DS2, F2, G2, DS2, D2
   .byte JUMP, <(mc_pattern4loop-*)

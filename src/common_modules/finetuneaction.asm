@@ -1,13 +1,21 @@
 
-  LDA CHXnote,y
+  LDA CHXnote,x
   CMP #$A0
   BCS dontfinetune
 
-  LDA CHXfinetune,y
+  LDA CHXfinetune,x
   CMP #$80
   ROR a
   CLC
-  ADC APUregbuffer+2,y
-  STA APUregbuffer+2,y
-
+  BMI negativefinetune
+  ADC APUregbuffer+2,x
+  STA APUregbuffer+2,x
+  BCC dontfinetune
+  INC APUregbuffer+3,x
+  BCS dontfinetune
+negativefinetune:
+  ADC APUregbuffer+2,x
+  STA APUregbuffer+2,x
+  BCS dontfinetune
+  DEC APUregbuffer+3,x
 dontfinetune:

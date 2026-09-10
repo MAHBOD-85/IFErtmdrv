@@ -1,5 +1,5 @@
   LDA CHXdivisorprogress,x
-  CMP CHXdivisorcount,x
+  CMP CHXdivisorcountimm,x
   BCS skipdivisor
   INC CHXdivisorprogress,x
   LDA CHXaccountfordivisorflag,x      ; SEQUENCE BREAK INTEROP CODE

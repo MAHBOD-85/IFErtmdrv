@@ -50,8 +50,10 @@ clrmem:
   INX
   BNE clrmem
 
+  JSR zsaw_init
 
-  LDA #$0F
+  CLI
+  LDA #$1F
   STA $4015
 
 vblankwait2:
@@ -121,9 +123,9 @@ Update:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-NMI:
+ZSAW_NMI_GAME_HANDLER:
   .include "ifertmdrv/ifertmdrv.asm"
-  RTI
+  RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -137,6 +139,10 @@ song1:
   .include "centralmusic.asm"
 
 .segment "DPCM"
+
+  .include "ifertmdrv/zsaw_ca65_module/zsaw.inc"
+  .include "ifertmdrv/zsaw_ca65_module/zsaw.asm"
+
   .align 64
 dpcm1:
   .incbin "dpcm.dmc"
@@ -147,13 +153,12 @@ dpcmtbl:
   .include "dpcmtbl.asm"
 
 
-
 ;;;;;;;;;;;;;;
 
   .segment "VECTORS"
-  .word NMI
+  .word zsaw_nmi
   .word RESET
-  .word 0
+  .word zsaw_irq
 ;;;;;;;;;;;;;;
 
   .segment "TILES"

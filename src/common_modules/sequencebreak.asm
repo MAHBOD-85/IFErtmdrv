@@ -14,7 +14,7 @@
   LDX <Region
   CPX #$01
   BCC skipdelayspeedcorrect
-  ADC #$7F
+  ADC #palspeedtbl-speedtbl-1
 skipdelayspeedcorrect:
 
   TAX

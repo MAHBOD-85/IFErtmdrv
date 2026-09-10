@@ -1,15 +1,15 @@
 .segment "HEADER"
 
-INES_MAPPER = 0 ; 0 = NROM
-INES_MIRROR = 0 ; 0 = horizontal mirroring, 1 = vertical mirroring
-INES_SRAM   = 0 ; 1 = battery backed SRAM at $6000-7FFF
+INES_MAPPER = 0
+INES_MIRROR = 0
+INES_SRAM   = 0
 
-.byte 'N', 'E', 'S', $1A ; ID
-.byte $02 ; 16k PRG chunk count
-.byte $01 ; 8k CHR chunk count
+.byte 'N', 'E', 'S', $1A
+.byte $02
+.byte $01
 .byte INES_MIRROR | (INES_SRAM << 1) | ((INES_MAPPER & $f) << 4)
 .byte (INES_MAPPER & %11110000)
-.byte $0, $0, $0, $0, $0, $0, $0, $0 ; padding
+.byte $0, $0, $0, $0, $0, $0, $0, $0
 
 ;;;;;;;;;;;;;;;
 
@@ -21,19 +21,19 @@ INES_SRAM   = 0 ; 1 = battery backed SRAM at $6000-7FFF
 
   .segment "CODE"
 RESET:
-  SEI          ; disable IRQs
-  CLD          ; disable decimal mode
+  SEI
+  CLD
   LDX #$40
-  STX $4017    ; disable APU frame IRQ
+  STX $4017
   LDX #$FF
-  TXS          ; Set up stack
-  INX          ; now X = 0
-  STX $2000    ; disable NMI
-  STX $2001    ; disable rendering
+  TXS
+  INX
+  STX $2000
+  STX $2001
   LDX #$00
-  STX $4010    ; disable DMC IRQs
+  STX $4010
   BIT $2002
-vblankwait1:       ; First wait for vblank to make sure PPU is ready
+vblankwait1:
   BIT $2002
   BPL vblankwait1
 
@@ -41,6 +41,7 @@ clrmem:
   LDA #$00
   STA $0000, x
   STA $0100, x
+  STA $0200, x
   STA $0300, x
   STA $0400, x
   STA $0500, x
@@ -53,11 +54,39 @@ clrmem:
   LDA #$0F
   STA $4015
 
-vblankwait2:      ; Second wait for vblank, PPU is ready after this
+vblankwait2:
   BIT $2002
   BPL vblankwait2
 
-                        ; PRERENDER FUNCTION
+
+
+	ldx #0
+	ldy #0
+vwait1:
+	bit $2002
+	bpl vwait1
+vwait2:
+	inx
+	bne noincy
+	iny
+noincy:
+	bit $2002
+	bpl vwait2
+
+	tya
+	cmp #16
+	bcc nodiv2
+	lsr
+nodiv2:
+	clc
+	adc #<-9
+	cmp #3
+	bcc noclip3
+	lda #3
+noclip3:
+  STA <Region
+
+
   LDX #$20
   LDA #$20
   STA $2006
@@ -74,7 +103,7 @@ vblankwait2:      ; Second wait for vblank, PPU is ready after this
 
 
   LDA #$3F
-  STA $2006        ; SETUP PALETTE
+  STA $2006
   LDA #$00
   STA $2006
 palloop:
@@ -84,7 +113,7 @@ palloop:
   BNE palloop
 
   LDA #$3F
-  STA $2006        ; SETUP PALETTE
+  STA $2006
   LDA #$01
   STA $2006
   LDA #$2c
@@ -98,163 +127,163 @@ palloop:
 
 
 LoadBackground2:
-  LDA $2002             ; read PPU status to reset the high/low latch
+  LDA $2002
   LDA #$20
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$00
-  STA $2006             ; write the low byte of $2000 address
-  LDX #$00              ; start out at 0
+  STA $2006
+  LDX #$00
   LDY #$00
 LoadBackgroundLoop2:
-  LDA #$00     ; load data from address (background + the value in x)
-  STA $2007             ; write to PPU
-  INX                   ; X = X + 1
-  CPX #$00              ; Compare X to hex $80, decimal 128 - copying 128 bytes
-  BNE LoadBackgroundLoop2  ; Branch to LoadBackgroundLoop if compare was Not Equal to zero
+  LDA #$00
+  STA $2007
+  INX
+  CPX #$00
+  BNE LoadBackgroundLoop2
   INY
   CPY #$08
   BNE LoadBackgroundLoop2
 
   LDA #$22
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$0B
-  STA $2006             ; write the high byte of $2000 address
-  LDA #$08     ; load data from address (background + the value in x)
+  STA $2006
+  LDA #$08
   LDX #$09
 
 
 ifelogo1:
-  STA $2007             ; write to PPU
-  LDA #$08     ; load data from address (background + the value in x)
+  STA $2007
+  LDA #$08
   DEX
   BNE ifelogo1
 
   LDA #$22
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$2B
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$08
-  STA $2007             ; write to PPU
+  STA $2007
 
   LDA #$22
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$4B
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
 
   LDA #$08
-  STA $2007             ; write to PPU
+  STA $2007
   LDA #$00
-  STA $2007             ; write to PPU
+  STA $2007
   LDA #$00
-  STA $2007             ; write to PPU
+  STA $2007
   LDX #$06
 
 ifelogo2:
-  LDA #$08     ; load data from address (background + the value in x)
-  STA $2007             ; write to PPU
+  LDA #$08
+  STA $2007
   DEX
   BNE ifelogo2
 
   LDA #$22
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$6B
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$08
-  STA $2007             ; write to PPU
+  STA $2007
 
   LDA #$22
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$8B
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$08
-  STA $2007             ; write to PPU
+  STA $2007
   LDA #$22
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$91
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$08
-  STA $2007             ; write to PPU
+  STA $2007
   LDA #$08
-  STA $2007             ; write to PPU
+  STA $2007
   LDA #$08
-  STA $2007             ; write to PPU
+  STA $2007
 
   LDA #$22
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$CB
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDX #$09
 rtmblockdraw:
-  LDA ifertmdrvdatablock-1,x; load data from address (background + the value in x)
-  STA $2007             ; write to PPU
+  LDA ifertmdrvdatablock-1,x
+  STA $2007
   DEX
   BNE rtmblockdraw
 
   LDA #$23
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$0B
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDX #$09
 rtmblockdraw2:
-  LDA driverversionblock-1,x; load data from address (background + the value in x)
-  STA $2007             ; write to PPU
+  LDA driverversionblock-1,x
+  STA $2007
   DEX
   BNE rtmblockdraw2
 
   LDA #$20
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$21
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDX #$1E
 titleblockdraw:
-  LDA titleblock-1,x; load data from address (background + the value in x)
-  STA $2007             ; write to PPU
+  LDA titleblock-1,x
+  STA $2007
   DEX
   BNE titleblockdraw
 
 
 
   LDA #$20
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$61
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDX #$1E
 authorblockdraw:
-  LDA authorblock-1,x; load data from address (background + the value in x)
-  STA $2007             ; write to PPU
+  LDA authorblock-1,x
+  STA $2007
   DEX
   BNE authorblockdraw
 
   LDA #$20
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$A1
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDX #$1E
 driversizeblockdraw:
-  LDA driversizeblock-1,x; load data from address (background + the value in x)
-  STA $2007             ; write to PPU
+  LDA driversizeblock-1,x
+  STA $2007
   DEX
   BNE driversizeblockdraw
 
   LDA #$20
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$C1
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDX #$1E
 songsizeblockdraw:
-  LDA songsizeblock-1,x; load data from address (background + the value in x)
-  STA $2007             ; write to PPU
+  LDA songsizeblock-1,x
+  STA $2007
   DEX
   BNE songsizeblockdraw
 
   LDA #$21
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA #$21
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDX #$1E
 githubpromotionblockdraw:
-  LDA githubpromotionblock-1,x; load data from address (background + the value in x)
-  STA $2007             ; write to PPU
+  LDA githubpromotionblock-1,x
+  STA $2007
   DEX
   BNE githubpromotionblockdraw
 
@@ -298,10 +327,7 @@ githubpromotionblockdraw:
 
 
 
-  ;;;;;;;;;;;;;; LOAD FUNCTION
-
-  LDA $FFF7
-  STA <Region
+  ;;;;;;;;;;;;;
 
   LDA <Region
   BNE palset
@@ -317,7 +343,6 @@ ntscset:
   STA <$A5
   STA <$A3
   STA <$A1
-  STA <$06
   LDA #$08
   STA APUregbuffer+1
   STA APUregbuffer+5
@@ -325,14 +350,15 @@ ntscset:
 
   LDA #>song1
   STA songAddr
+  LDA #<song1
+  STA songAddrProgress
 
-
-  ;;;;;;;;;;;;;; FINISH LOAD
+  ;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   LDX #$8C
-  STX $2000    ; enable NMI
+  STX $2000
 
 Update:
   JMP *+3
@@ -427,16 +453,16 @@ NMI:
 
   LDX #$00
   STX $2001
-  LDA $2002             ; read PPU status to reset the high/low latch
+  LDA $2002
   LDA #$00
   STA <tmp
 
 playerloop:
 
   LDA #$21
-  STA $2006             ; write the high byte of $2000 address
+  STA $2006
   LDA testbits,x
-  STA $2006             ; write the low byte of $2000 address
+  STA $2006
   LDY #$0F
 
 
@@ -682,17 +708,17 @@ minutenottensskip:
 ifertmdrvdatablock:
   .byte "vrdmtrEFI"
 driverversionblock:
-  .byte " 2.5.1v  "
+  .byte " 0.6.1v  "
 titleblock:
   .byte "      eltiT - xarT emiT :eltiT"
 authorblock:
   .byte "                nilloF miT :yB"
 driversizeblock:
-  .byte "       setyB 3801 :eziS revirD"
+  .byte "       setyB 9411 :eziS revirD"
 songsizeblock:
-  .byte "       setyB 4011   :eziS gnoS"
+  .byte "       setyB 259    :eziS gnoS"
 githubpromotionblock:
-  .byte "vrdmtrEFI/58-DOBHAM/moc.buhtig"
+  .byte " vrdmtrEFI/erawEFI/moc.buhtig "
 
 testbits:
   .byte $C1,$00,$00,$00,$C3,$00,$00,$00,$C5,$00,$00,$00,$C7,$00,$00,$00
@@ -705,13 +731,11 @@ yvalues:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   .align 256
 speedtbl:
-  .incbin "speedtbl.db"
+  .include "speedtbl.asm"
 freqtbl:
   .incbin "freqtbl.db"
 instrument:
-  .incbin "instrument.db"
-instrument2:
-  .incbin "instrument2.db"
+  .include "instrument.asm"
 song1:
   .include "centralmusic.asm"
 

@@ -1,46 +1,45 @@
-lead25 = $00
-lead25c = $02
-arpmaj = $06
-arpmin = $0C
-hihat = $10
-arpmaj4 = $14
-guit50 = $16
-lead50 = $18
-guit12 = $1A
-lead12 = $1C
-kick = $1E
-snare = $24
-slideup = $2B
-slidedown = $2E
-slidedown2 = $31
-bass = $33
-tridrum = $37
-lead254 = $39
-arp12 = $3B
-ohihat = $3D
-vibrato = $44
-vibrato2 = $4C
-lead50vibrato = $54
-lead50vibrato2 = $56
-buzz = $58
-buzzchug = $5F
-hiride = $64
-loride = $69
-bell = $6F
+lead25 = 0
+lead25c = 2
+arpmaj = 6
+arpmin = 17
+hihat = 25
+arpmaj4 = 29
+guit50 = 32
+lead50 = 36
+guit12 = 38
+lead12 = 42
+kick = 44
+snare = 51
+slideup = 58
+slidedown = 63
+slidedown2 = 68
+bass = 72
+tridrum = 76
+lead254 = 80
+arp12 = 82
+ohihat = 84
+vibrato = 97
+vibrato2 = 110
+lead50vibrato = 123
+lead50vibrato2 = 126
+buzz = 129
+buzzchug = 137
+hiride = 143
+loride = 148
+bell = 154
 
 t4beat = $06
 thbeat = $05
 t1beat = $04
-t3beat = $07
-t2hbeat = $0B
-t2qbeat = $0D
-tlast7from8 = $0C
-t2beat = $0E
-t1hbeat = $0F
-t3hbeat = $10
+t1hbeat = $0B
+tinst = $08
+tinst2 = $09
+tinst3 = $0A
 
 mc_songstart:
   .byte PAT_INFO, $3F, $00
+  .byte INSTBANK_SET
+  .word instrument
 
   .byte >mc_pattern3,<mc_pattern3
   .byte >mc_pattern2,<mc_pattern2
@@ -185,8 +184,9 @@ mc_pattern6loop:
 mc_pattern7:
   .byte INST1, $FF
   .byte INST2, lead25
-  .byte G2, slideup, DELAY3, thbeat, G3+1, DELAY3, thbeat, G3+1, DELAY3, t3beat, G3, slidedown, DELAY3, thbeat, G2+1, DELAY3, thbeat, G2+1, DELAY3, t3beat, G3, slideup, DELAY3, thbeat, G4+1, DELAY3, thbeat, G4+1, DELAY3, t3beat, G4, slidedown2, DELAY3, thbeat, G2+1, DELAY3, thbeat, G2+1, DELAY3, t3beat
-  .byte D3, slideup, DELAY3, thbeat, D4+1, DELAY3, thbeat, D4+1, DELAY3, t3beat, F4+1, DELAY3, t4beat, F3, slideup, DELAY3, thbeat, F4+1, DELAY3, thbeat, F4+1, DELAY3, t3beat, G4+1, DELAY3, t4beat
+  .byte EFF_DIVISOR, $FF
+  .byte G2, slideup, $03, G3+1, $03, G3+1, $17, G3, slidedown, $03, G2+1, $03, G2+1, $17, G3, slideup, $03, G4+1, $03, G4+1, $17, G4, slidedown2, $03, G2+1, $03, G2+1, $17
+  .byte D3, slideup, $03, D4+1, $03, D4+1, $17, F4+1, $7, F4+1, $17, F3, slideup, $03, F4+1, $03, F4+1, $17, G4+1, $7, G4+1, $17
 
 mc_pattern8:
   .byte INST1, bass
@@ -267,21 +267,23 @@ mc_pattern23loop2:
   .byte JUMP, <(mc_pattern12-*)
 
 mc_pattern21:
+  .byte EFF_DIVISOR, $01
 mc_pattern21loop:
-  .byte F3+1, I, G3, I, AS3+1, I, C4, I, EFF_MINILOOP, $02, <(mc_pattern21loop-*)
+  .byte F3+1, G3, AS3+1, C4, EFF_MINILOOP, $02, <(mc_pattern21loop-*)
 mc_pattern21loop2:
-  .byte A3+1, I, AS3, I, C4+1, I, D4, I, EFF_MINILOOP, $05, <(mc_pattern21loop2-*)
+  .byte A3+1, AS3, C4+1, D4, EFF_MINILOOP, $05, <(mc_pattern21loop2-*)
 mc_pattern21loop3:
-  .byte AS3+1, I, C4, I, D4+1, I, F4, I, EFF_MINILOOP, $08, <(mc_pattern21loop3-*)
+  .byte AS3+1, C4, D4+1, F4, EFF_MINILOOP, $08, <(mc_pattern21loop3-*)
 mc_pattern21loop4:
-  .byte C4+1, I, D4, I, F4+1, I, G4, I, EFF_MINILOOP, $0B, <(mc_pattern21loop4-*)
-  .byte G4+1, A4, DELAY2, tlast7from8, GS4, DELAY3, thbeat, G4, DELAY3, thbeat, G4+1, DELAY3, thbeat
+  .byte C4+1, D4, F4+1, G4, EFF_MINILOOP, $0B, <(mc_pattern21loop4-*)
+  .byte EFF_DIVISOR, $FF
+  .byte G4+1, $0, A4, $6, GS4, $3, G4, $3, G4+1, $3
   .byte INST1, $FF
-  .byte G4, vibrato, DELAY3, t1beat, G4, lead50vibrato, DELAY3, t3hbeat, G4, tridrum, OFF, lead12, DELAY2, tlast7from8
-  .byte D4+1, E4, lead12, I, I, D4, lead12, DELAY3, thbeat, C4+1, DELAY3, thbeat, C4, vibrato2, DELAY3, t2hbeat, C4, slidedown2, OFF, lead12, I, I
+  .byte G4, vibrato, $7, G4, lead50vibrato, $1B, G4, tridrum, $0, OFF, lead12, $6
+  .byte D4+1, $0, E4, lead12, $2, D4, lead12, $3, C4+1, $3, C4, vibrato2, $13, C4, slidedown2, $0, OFF, lead12, $2
 mc_pattern21loop5:
-  .byte C4+1, I, D4, lead12, I, F4+1, DELAY3, thbeat, EFF_MINILOOP, $0D, <(mc_pattern21loop5-*), D4+1, DELAY3, thbeat
-  .byte F4+1, G4, lead12, I, I, G4, vibrato, DELAY3, t1beat, G4, lead50vibrato, DELAY1, t2qbeat, G4, tridrum, OFF, lead12
+  .byte C4+1, $1, D4, lead12, $1, F4+1, $3, EFF_MINILOOP, $0D, <(mc_pattern21loop5-*), D4+1, $3
+  .byte F4+1, $0, G4, lead12, $2, G4, vibrato, $7, G4, lead50vibrato, $11, EFF_DIVISOR, $00, G4, tridrum, OFF, lead12
   .byte INST1, lead254
   .byte INST2, lead25
   .byte JUMP, <(mc_pattern9loop-*)
@@ -289,13 +291,15 @@ mc_pattern21loop5:
 mc_pattern13:
   .byte INST1, $FF
   .byte INST2, guit12
-  .byte C5+1, D5, lead12, I, I, C5, lead12, DELAY3, thbeat, A4, guit50, DELAY3, thbeat, A4, vibrato, DELAY3, t2hbeat, A4, tridrum, OFF, lead12, DELAY2, tlast7from8, F4+1, DELAY3, t1beat, G4+1, DELAY3, t1beat, A4+1, DELAY3, thbeat, AS4, lead12, DELAY3, thbeat, A4+1, DELAY3, thbeat, A4, vibrato, DELAY3, t1beat, A4, lead50vibrato, DELAY1, t2qbeat, A4, tridrum, OFF, lead12
+  .byte EFF_DIVISOR, $FF
+  .byte C5+1, $0, D5, lead12, $2, C5, lead12, $3, A4, guit50, $3, A4, vibrato, $13, A4, tridrum, $0, OFF, lead12, $6, F4+1, $7, G4+1, $7, A4+1, $3, AS4, lead12, $3, A4+1, $3, A4, vibrato, $7, A4, lead50vibrato, $11, EFF_DIVISOR, $00, A4, tridrum, OFF, lead12
   .byte INST1, lead254
   .byte INST2, lead25
   .byte JUMP, <(mc_pattern9loop-*)
 
 mc_pattern9:
   .byte INST1, lead254
+  .byte EFF_DIVISOR, $00
 mc_pattern9loop:
   .byte D4+1, A3, C4+1, D4, E4+1, C4, F4+1, E4, G4+1, F4, E4+1, G4, C4+1, E4, A3+1, C4
   .byte JUMP, <(mc_pattern9loop-*)
@@ -303,10 +307,11 @@ mc_pattern9loop:
 mc_pattern14:
   .byte INST1, $FF
   .byte INST2, guit12
+  .byte EFF_DIVISOR, $FF
 mc_pattern14loop:
-  .byte F5+1, G5, lead12, I, I, OFF, lead12, I, EFF_MINILOOP, 0, <(mc_pattern14loop-*)
-  .byte F5+1, G5, lead12, I, I, G5, vibrato, DELAY3, t2beat, G5, slidedown2, OFF, lead12, DELAY2, tlast7from8
-  .byte C4+1, D4, lead12, I, I, C4+1, DELAY3, t1hbeat, G3+1, AS3, lead12, I, I, A3+1, DELAY3, t1beat, A3, vibrato2, DELAY3, t1beat, A3, lead50vibrato2, DELAY1, t2qbeat, A3, tridrum, OFF, lead12
+  .byte F5+1, $0, G5, lead12, $2, OFF, lead12, $1, EFF_MINILOOP, 0, <(mc_pattern14loop-*)
+  .byte F5+1, $0, G5, lead12, $2, G5, vibrato, $0F, G5, slidedown2, $0, OFF, lead12, $6
+  .byte C4+1, $0, D4, lead12, $2, C4+1, $B, G3+1, $0, AS3, lead12, $2, A3+1, $7, A3, vibrato2, $7, A3, lead50vibrato2, $11, EFF_DIVISOR, $00, A3, tridrum, OFF, lead12
   .byte INST1, lead254
   .byte INST2, lead25
   .byte JUMP, <(mc_pattern9loop-*)
@@ -343,9 +348,10 @@ mc_pattern22loop:
 
 mc_pattern25:
   .byte INST1, bell
+  .byte EFF_DIVISOR, $FF
 mc_pattern25loop:
-  .byte G1, DELAY3, t4beat, EFF_MINILOOP, 2, <(mc_pattern25loop-*)
+  .byte G1, $1F, EFF_MINILOOP, 2, <(mc_pattern25loop-*)
 mc_pattern25loop2:
-  .byte G1, DELAY3, t1beat, AS1, DELAY3, thbeat, C2, DELAY3, thbeat, JUMP, <(mc_pattern25loop2-*)
+  .byte G1, $7, AS1, $3, C2, $3, JUMP, <(mc_pattern25loop2-*)
 
 mc_songend:

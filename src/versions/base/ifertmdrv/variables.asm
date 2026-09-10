@@ -5,6 +5,8 @@ songAddrProgress:
   .res 1
 songAddr:
   .res 1
+instBank:
+  .res 2
 Region:
   .res 1
 
@@ -14,6 +16,7 @@ Region:
 CHXpataddr:      ; THIS OCCUPIES 2 SLOTS
 shitFuckRegPrev: ; THIS OCCUPIES THE 4TH SLOT
   .res 2
+CHXdivisorcountimm:
   .res 1
   .res 1
   .res 12

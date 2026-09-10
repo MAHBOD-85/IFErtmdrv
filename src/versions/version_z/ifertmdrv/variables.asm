@@ -5,6 +5,8 @@ songAddrProgress:
   .res 1
 songAddr:
   .res 1
+instBank:
+  .res 2
 Region:
   .res 1
 
@@ -12,25 +14,24 @@ Region:
   .segment "BSS"
 
 ExtraReg:
-shitFuckRegPrev:
   .res 1
 DPCMready:
   .res 1
 channel:
-  .res 2
+  .res 1
 currentPatternFrameTimer:
   .res 1
 currentPatternProgress:
   .res 1
 currentPatternSpeed:
-  .res 2
+  .res 1
 patternLength:
   .res 1
-
-  .res 7
+zsawmodeswitch:
+  .res 1
 
 APUregbuffer:
-  .res 20
+  .res 16
 
 
 
@@ -91,8 +92,10 @@ CHXminiloopflag:
 
   .res 16
 
+shitFuckRegPrev:
 CHXpataddr:
   .res 2
+CHXdivisorcountimm:
   .res 1
   .res 1
 
